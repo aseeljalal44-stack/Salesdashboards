@@ -13,7 +13,6 @@ import plotly.express as px
 from datetime import datetime, timedelta
 from io import BytesIO
 import textwrap
-import pyperclip
 
 # ==================== نظام الترجمة الكامل ====================
 
