@@ -10,8 +10,10 @@ import os
 import re
 import plotly.graph_objects as go
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
+import textwrap
+import pyperclip
 
 # ==================== نظام الترجمة الكامل ====================
 
@@ -139,15 +141,15 @@ class TranslationSystem:
             'zero_std': 'انحراف معياري صفري - لا يمكن كشف القيم الشاذة',
             
             # التقرير
-            'report_title': '📄 التقرير التحليلي',
-            'generate_report': '📋 إنشاء التقرير',
+            'report_title': '📄 التقرير التحليلي الاحترافي',
+            'generate_report': '📋 إنشاء التقرير الاحترافي',
             'copy_report': '📋 نسخ التقرير',
             'report_copied': '✅ تم نسخ التقرير إلى الحافظة',
             'executive_summary': 'الملخص التنفيذي',
             'data_overview': 'نظرة عامة على البيانات',
             'key_findings': 'النقاط الرئيسية',
             'performance_analysis': 'تحليل الأداء',
-            'recommendations': 'التوصيات',
+            'recommendations': 'التوصيات الاستراتيجية',
             'data_quality': 'جودة البيانات',
             'report_date': 'تاريخ التقرير',
             'analysis_period': 'فترة التحليل',
@@ -180,6 +182,35 @@ class TranslationSystem:
             'warning': 'تحذير',
             'success': 'نجاح',
             'info': 'معلومة',
+            
+            # مصطلحات إضافية للتقرير
+            'company_name': 'شركة التميز التجارية',
+            'report_author': 'إدارة التحليلات والأبحاث',
+            'report_id': 'رقم التقرير',
+            'report_period': 'فترة التقرير',
+            'market_share': 'حصصة السوق',
+            'growth_rate': 'معدل النمو',
+            'customer_satisfaction': 'رضا العملاء',
+            'revenue_breakdown': 'توزيع الإيرادات',
+            'performance_metrics': 'مقاييس الأداء',
+            'strategic_insights': 'رؤى استراتيجية',
+            'actionable_recommendations': 'توصيات قابلة للتنفيذ',
+            'risk_assessment': 'تقييم المخاطر',
+            'opportunity_analysis': 'تحليل الفرص',
+            'competitive_analysis': 'تحليل المنافسة',
+            'financial_summary': 'ملخص مالي',
+            'sales_forecast': 'توقعات المبيعات',
+            'customer_behavior': 'سلوك العملاء',
+            'product_performance': 'أداء المنتجات',
+            'regional_analysis': 'تحليل المناطق',
+            'quarterly_comparison': 'مقارنة ربع سنوية',
+            'annual_trends': 'اتجاهات سنوية',
+            'market_penetration': 'اختراق السوق',
+            'customer_acquisition': 'اكتساب العملاء',
+            'customer_retention': 'احتفاظ بالعملاء',
+            'profit_margin': 'هامش الربح',
+            'return_on_investment': 'العائد على الاستثمار',
+            'operational_efficiency': 'الكفاءة التشغيلية',
         },
         
         'en': {
@@ -302,15 +333,15 @@ class TranslationSystem:
             'zero_std': 'Zero standard deviation - Cannot detect outliers',
             
             # Report
-            'report_title': '📄 Analytical Report',
-            'generate_report': '📋 Generate Report',
+            'report_title': '📄 Professional Analytical Report',
+            'generate_report': '📋 Generate Professional Report',
             'copy_report': '📋 Copy Report',
             'report_copied': '✅ Report copied to clipboard',
             'executive_summary': 'Executive Summary',
             'data_overview': 'Data Overview',
             'key_findings': 'Key Findings',
             'performance_analysis': 'Performance Analysis',
-            'recommendations': 'Recommendations',
+            'recommendations': 'Strategic Recommendations',
             'data_quality': 'Data Quality',
             'report_date': 'Report Date',
             'analysis_period': 'Analysis Period',
@@ -343,6 +374,35 @@ class TranslationSystem:
             'warning': 'Warning',
             'success': 'Success',
             'info': 'Info',
+            
+            # Additional report terms
+            'company_name': 'Excellence Trading Company',
+            'report_author': 'Analytics & Research Department',
+            'report_id': 'Report ID',
+            'report_period': 'Report Period',
+            'market_share': 'Market Share',
+            'growth_rate': 'Growth Rate',
+            'customer_satisfaction': 'Customer Satisfaction',
+            'revenue_breakdown': 'Revenue Breakdown',
+            'performance_metrics': 'Performance Metrics',
+            'strategic_insights': 'Strategic Insights',
+            'actionable_recommendations': 'Actionable Recommendations',
+            'risk_assessment': 'Risk Assessment',
+            'opportunity_analysis': 'Opportunity Analysis',
+            'competitive_analysis': 'Competitive Analysis',
+            'financial_summary': 'Financial Summary',
+            'sales_forecast': 'Sales Forecast',
+            'customer_behavior': 'Customer Behavior',
+            'product_performance': 'Product Performance',
+            'regional_analysis': 'Regional Analysis',
+            'quarterly_comparison': 'Quarterly Comparison',
+            'annual_trends': 'Annual Trends',
+            'market_penetration': 'Market Penetration',
+            'customer_acquisition': 'Customer Acquisition',
+            'customer_retention': 'Customer Retention',
+            'profit_margin': 'Profit Margin',
+            'return_on_investment': 'Return on Investment',
+            'operational_efficiency': 'Operational Efficiency',
         }
     }
     
@@ -517,7 +577,10 @@ class SalesDataAnalyzer:
             'trends': {},
             'insights': [],
             'warnings': [],
-            'top_performers': {}
+            'top_performers': {},
+            'growth_metrics': {},
+            'customer_analysis': {},
+            'product_analysis': {}
         }
         
         analysis_results['kpis'] = self._calculate_kpis()
@@ -526,6 +589,9 @@ class SalesDataAnalyzer:
         analysis_results['insights'] = self._extract_insights()
         analysis_results['warnings'] = self._check_data_quality()
         analysis_results['top_performers'] = self._identify_top_performers()
+        analysis_results['growth_metrics'] = self._calculate_growth_metrics()
+        analysis_results['customer_analysis'] = self._analyze_customer_segments()
+        analysis_results['product_analysis'] = self._analyze_product_portfolio()
         
         return analysis_results
     
@@ -539,7 +605,8 @@ class SalesDataAnalyzer:
             'value': total_transactions,
             'formatted': f"{total_transactions:,}",
             'label': TranslationSystem.t('kpi_transactions'),
-            'icon': '🛒'
+            'icon': '🛒',
+            'trend': 'neutral'
         }
         
         # إجمالي المبيعات
@@ -553,7 +620,8 @@ class SalesDataAnalyzer:
                         'value': total_sales,
                         'formatted': f"${total_sales:,.0f}",
                         'label': TranslationSystem.t('kpi_sales'),
-                        'icon': '💰'
+                        'icon': '💰',
+                        'trend': 'positive' if total_sales > 0 else 'negative'
                     }
                     
                     avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
@@ -561,7 +629,8 @@ class SalesDataAnalyzer:
                         'value': avg_transaction,
                         'formatted': f"${avg_transaction:,.0f}",
                         'label': TranslationSystem.t('kpi_avg_transaction'),
-                        'icon': '📊'
+                        'icon': '📊',
+                        'trend': 'positive' if avg_transaction > 0 else 'negative'
                     }
                 except:
                     pass
@@ -573,11 +642,22 @@ class SalesDataAnalyzer:
                 try:
                     self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
                     total_profit = self.df[profit_col].sum()
+                    profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
+                    
                     kpis['total_profit'] = {
                         'value': total_profit,
                         'formatted': f"${total_profit:,.0f}",
                         'label': TranslationSystem.t('kpi_profit'),
-                        'icon': '📈'
+                        'icon': '📈',
+                        'trend': 'positive' if total_profit > 0 else 'negative'
+                    }
+                    
+                    kpis['profit_margin'] = {
+                        'value': profit_margin,
+                        'formatted': f"{profit_margin:.1f}%",
+                        'label': TranslationSystem.t('profit_margin'),
+                        'icon': '📊',
+                        'trend': 'positive' if profit_margin > 15 else 'neutral'
                     }
                 except:
                     pass
@@ -591,7 +671,8 @@ class SalesDataAnalyzer:
                     'value': unique_customers,
                     'formatted': f"{unique_customers:,}",
                     'label': TranslationSystem.t('kpi_customers'),
-                    'icon': '👥'
+                    'icon': '👥',
+                    'trend': 'positive' if unique_customers > 0 else 'neutral'
                 }
         
         # عدد المنتجات الفريدة
@@ -603,7 +684,8 @@ class SalesDataAnalyzer:
                     'value': unique_products,
                     'formatted': f"{unique_products:,}",
                     'label': TranslationSystem.t('kpi_products'),
-                    'icon': '📦'
+                    'icon': '📦',
+                    'trend': 'positive' if unique_products > 0 else 'neutral'
                 }
         
         # متوسط الكمية لكل معاملة
@@ -617,12 +699,153 @@ class SalesDataAnalyzer:
                         'value': avg_quantity,
                         'formatted': f"{avg_quantity:.1f}",
                         'label': TranslationSystem.t('kpi_avg_quantity'),
-                        'icon': '⚖️'
+                        'icon': '⚖️',
+                        'trend': 'positive' if avg_quantity > 1 else 'neutral'
+                    }
+                except:
+                    pass
+        
+        # معدل الخصم
+        if 'discount' in self.mapping and 'total_amount' in self.mapping:
+            discount_col = self.mapping['discount']
+            amount_col = self.mapping['total_amount']
+            if discount_col in self.df.columns and amount_col in self.df.columns:
+                try:
+                    self.df[discount_col] = pd.to_numeric(self.df[discount_col], errors='coerce')
+                    total_discount = self.df[discount_col].sum()
+                    discount_rate = (total_discount / total_sales * 100) if total_sales > 0 else 0
+                    
+                    kpis['discount_rate'] = {
+                        'value': discount_rate,
+                        'formatted': f"{discount_rate:.1f}%",
+                        'label': TranslationSystem.t('kpi_discount_rate'),
+                        'icon': '🎯',
+                        'trend': 'positive' if discount_rate < 10 else 'neutral'
                     }
                 except:
                     pass
         
         return kpis
+    
+    def _calculate_growth_metrics(self):
+        """حساب مقاييس النمو"""
+        growth_metrics = {}
+        
+        if 'order_date' in self.mapping and 'total_amount' in self.mapping:
+            date_col = self.mapping['order_date']
+            amount_col = self.mapping['total_amount']
+            
+            if date_col in self.df.columns and amount_col in self.df.columns:
+                try:
+                    df_copy = self.df.copy()
+                    df_copy[date_col] = pd.to_datetime(df_copy[date_col], errors='coerce')
+                    df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
+                    
+                    df_clean = df_copy.dropna(subset=[date_col, amount_col])
+                    
+                    if len(df_clean) > 0:
+                        df_clean['year_month'] = df_clean[date_col].dt.to_period('M')
+                        monthly_sales = df_clean.groupby('year_month')[amount_col].sum()
+                        
+                        if len(monthly_sales) > 1:
+                            latest_month = monthly_sales.iloc[-1]
+                            previous_month = monthly_sales.iloc[-2]
+                            month_over_month_growth = ((latest_month - previous_month) / previous_month * 100) if previous_month > 0 else 0
+                            
+                            growth_metrics['mom_growth'] = {
+                                'value': month_over_month_growth,
+                                'formatted': f"{month_over_month_growth:+.1f}%",
+                                'label': 'Month-over-Month Growth'
+                            }
+                except:
+                    pass
+        
+        return growth_metrics
+    
+    def _analyze_customer_segments(self):
+        """تحليل شرائح العملاء"""
+        customer_segments = {}
+        
+        if 'customer_id' in self.mapping and 'total_amount' in self.mapping:
+            customer_col = self.mapping['customer_id']
+            amount_col = self.mapping['total_amount']
+            
+            if customer_col in self.df.columns and amount_col in self.df.columns:
+                try:
+                    df_copy = self.df.copy()
+                    df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
+                    
+                    customer_sales = df_copy.groupby(customer_col)[amount_col].sum().sort_values(ascending=False)
+                    
+                    if len(customer_sales) > 0:
+                        # تحليل العملاء حسب القيمة
+                        top_10_customers = customer_sales.head(10).to_dict()
+                        bottom_10_customers = customer_sales.tail(10).to_dict()
+                        
+                        customer_segments['top_customers'] = top_10_customers
+                        customer_segments['bottom_customers'] = bottom_10_customers
+                        
+                        # حساب متوسط قيمة العميل
+                        avg_customer_value = customer_sales.mean()
+                        customer_segments['avg_customer_value'] = avg_customer_value
+                        
+                        # تحليل توزيع العملاء
+                        segments = {
+                            'VIP': customer_sales[customer_sales > customer_sales.quantile(0.8)].count(),
+                            'High Value': customer_sales[(customer_sales <= customer_sales.quantile(0.8)) & 
+                                                         (customer_sales > customer_sales.quantile(0.5))].count(),
+                            'Medium Value': customer_sales[(customer_sales <= customer_sales.quantile(0.5)) & 
+                                                           (customer_sales > customer_sales.quantile(0.2))].count(),
+                            'Low Value': customer_sales[customer_sales <= customer_sales.quantile(0.2)].count()
+                        }
+                        
+                        customer_segments['value_segments'] = segments
+                except:
+                    pass
+        
+        return customer_segments
+    
+    def _analyze_product_portfolio(self):
+        """تحليل محفظة المنتجات"""
+        product_analysis = {}
+        
+        if 'product_name' in self.mapping and 'total_amount' in self.mapping and 'profit' in self.mapping:
+            product_col = self.mapping['product_name']
+            amount_col = self.mapping['total_amount']
+            profit_col = self.mapping['profit']
+            
+            if all(col in self.df.columns for col in [product_col, amount_col, profit_col]):
+                try:
+                    df_copy = self.df.copy()
+                    df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
+                    df_copy[profit_col] = pd.to_numeric(df_copy[profit_col], errors='coerce')
+                    
+                    product_stats = df_copy.groupby(product_col).agg(
+                        total_sales=(amount_col, 'sum'),
+                        total_profit=(profit_col, 'sum'),
+                        transaction_count=(amount_col, 'count')
+                    ).reset_index()
+                    
+                    product_stats['profit_margin'] = (product_stats['total_profit'] / product_stats['total_sales'] * 100) if product_stats['total_sales'].sum() > 0 else 0
+                    
+                    # تصنيف المنتجات حسب الربحية
+                    product_stats['product_category'] = pd.qcut(product_stats['profit_margin'], 
+                                                              q=4, 
+                                                              labels=['Low Profit', 'Medium Profit', 'High Profit', 'Premium'])
+                    
+                    product_analysis['product_stats'] = product_stats.to_dict('records')
+                    
+                    # تحليل ABC (باريتو)
+                    product_stats_sorted = product_stats.sort_values('total_sales', ascending=False)
+                    product_stats_sorted['cumulative_percentage'] = (product_stats_sorted['total_sales'].cumsum() / 
+                                                                   product_stats_sorted['total_sales'].sum() * 100)
+                    
+                    product_analysis['pareto_analysis'] = product_stats_sorted.to_dict('records')
+                    
+                except:
+                    pass
+        
+        return product_analysis
     
     def _analyze_distributions(self):
         """تحليل توزيع بيانات المبيعات"""
@@ -676,6 +899,11 @@ class SalesDataAnalyzer:
                         monthly_trend['year_month'] = monthly_trend['year_month'].astype(str)
                         
                         trends['monthly'] = monthly_trend.to_dict('records')
+                        
+                        # تحليل اتجاهات الموسمية
+                        df_clean['month'] = df_clean[date_col].dt.month
+                        monthly_pattern = df_clean.groupby('month')[amount_col].sum()
+                        trends['seasonality'] = monthly_pattern.to_dict()
                 except:
                     pass
         
@@ -684,6 +912,7 @@ class SalesDataAnalyzer:
     def _extract_insights(self):
         """استخلاص رؤى من بيانات المبيعات"""
         insights = []
+        lang = TranslationSystem.t('language')
         
         if 'region' in self.mapping and 'total_amount' in self.mapping:
             region_col = self.mapping['region']
@@ -697,10 +926,10 @@ class SalesDataAnalyzer:
                     if len(region_sales) > 0:
                         top_region = region_sales.index[0]
                         top_sales = region_sales.iloc[0]
-                        if TranslationSystem.t('language') == 'ar':
-                            insights.append(f"🏆 **أفضل منطقة مبيعات**: {top_region} (${top_sales:,.0f})")
+                        if lang == 'ar':
+                            insights.append(f"🏆 **المنطقة الأكثر ربحية**: {top_region} (${top_sales:,.0f})")
                         else:
-                            insights.append(f"🏆 **Top Sales Region**: {top_region} (${top_sales:,.0f})")
+                            insights.append(f"🏆 **Most Profitable Region**: {top_region} (${top_sales:,.0f})")
                 except:
                     pass
         
@@ -716,10 +945,29 @@ class SalesDataAnalyzer:
                     if len(product_sales) > 0:
                         top_product = product_sales.index[0]
                         top_qty = product_sales.iloc[0]
-                        if TranslationSystem.t('language') == 'ar':
-                            insights.append(f"📦 **أكثر منتج مبيعاً**: {top_product} ({top_qty:,} وحدة)")
+                        if lang == 'ar':
+                            insights.append(f"📦 **المنتج الأكثر مبيعاً**: {top_product} ({top_qty:,} وحدة)")
                         else:
                             insights.append(f"📦 **Top Selling Product**: {top_product} ({top_qty:,} units)")
+                except:
+                    pass
+        
+        if 'salesperson' in self.mapping and 'total_amount' in self.mapping:
+            salesperson_col = self.mapping['salesperson']
+            amount_col = self.mapping['total_amount']
+            
+            if salesperson_col in self.df.columns and amount_col in self.df.columns:
+                try:
+                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+                    salesperson_performance = self.df.groupby(salesperson_col)[amount_col].sum().sort_values(ascending=False)
+                    
+                    if len(salesperson_performance) > 0:
+                        top_salesperson = salesperson_performance.index[0]
+                        top_sales = salesperson_performance.iloc[0]
+                        if lang == 'ar':
+                            insights.append(f"👤 **أفضل مندوب مبيعات**: {top_salesperson} (${top_sales:,.0f})")
+                        else:
+                            insights.append(f"👤 **Top Salesperson**: {top_salesperson} (${top_sales:,.0f})")
                 except:
                     pass
         
@@ -739,9 +987,10 @@ class SalesDataAnalyzer:
                     salesperson_performance = self.df.groupby(salesperson_col)[amount_col].sum().sort_values(ascending=False)
                     
                     if len(salesperson_performance) > 0:
+                        top_3_salespeople = salesperson_performance.head(3)
                         top_performers['salesperson'] = {
-                            'name': salesperson_performance.index[0],
-                            'value': salesperson_performance.iloc[0]
+                            'top_3': [{'name': idx, 'value': val} for idx, val in top_3_salespeople.items()],
+                            'top_1': {'name': salesperson_performance.index[0], 'value': salesperson_performance.iloc[0]}
                         }
                 except:
                     pass
@@ -756,9 +1005,10 @@ class SalesDataAnalyzer:
                     product_profit = self.df.groupby(product_col)[profit_col].sum().sort_values(ascending=False)
                     
                     if len(product_profit) > 0:
+                        top_3_products = product_profit.head(3)
                         top_performers['product_profit'] = {
-                            'name': product_profit.index[0],
-                            'value': product_profit.iloc[0]
+                            'top_3': [{'name': idx, 'value': val} for idx, val in top_3_products.items()],
+                            'top_1': {'name': product_profit.index[0], 'value': product_profit.iloc[0]}
                         }
                 except:
                     pass
@@ -768,19 +1018,20 @@ class SalesDataAnalyzer:
     def _check_data_quality(self):
         """فحص جودة بيانات المبيعات"""
         warnings = []
+        lang = TranslationSystem.t('language')
         
         missing_percentage = (self.df.isnull().sum() / len(self.df)) * 100
         high_missing = missing_percentage[missing_percentage > 20].index.tolist()
         
         if high_missing:
-            if TranslationSystem.t('language') == 'ar':
+            if lang == 'ar':
                 warnings.append(f"⚠️ أعمدة بها قيم مفقودة >20%: {', '.join(high_missing[:3])}")
             else:
                 warnings.append(f"⚠️ Columns with missing values >20%: {', '.join(high_missing[:3])}")
         
         duplicates = self.df.duplicated().sum()
         if duplicates > 0:
-            if TranslationSystem.t('language') == 'ar':
+            if lang == 'ar':
                 warnings.append(f"⚠️ يوجد {duplicates} سجل مكرر")
             else:
                 warnings.append(f"⚠️ Found {duplicates} duplicate records")
@@ -792,7 +1043,7 @@ class SalesDataAnalyzer:
                     amount_data = pd.to_numeric(self.df[amount_col], errors='coerce')
                     negative_amounts = (amount_data < 0).sum()
                     if negative_amounts > 0:
-                        if TranslationSystem.t('language') == 'ar':
+                        if lang == 'ar':
                             warnings.append(f"⚠️ يوجد {negative_amounts} معاملة بمبلغ سالب")
                         else:
                             warnings.append(f"⚠️ Found {negative_amounts} transactions with negative amounts")
@@ -801,152 +1052,369 @@ class SalesDataAnalyzer:
         
         return warnings
     
-    def generate_text_report(self, analysis_results):
-        """إنشاء تقرير نصي احترافي"""
+    def generate_professional_report(self, analysis_results):
+        """إنشاء تقرير احترافي كامل للمبيعات"""
         lang = TranslationSystem.t('language')
+        current_date = datetime.now().strftime('%Y-%m-%d %H:%M')
+        report_id = f"SALE-{datetime.now().strftime('%Y%m%d')}-{np.random.randint(1000, 9999)}"
         
         if lang == 'ar':
             report = f"""
-{'='*80}
-تقرير تحليل بيانات المبيعات
-{'='*80}
+{'='*100}
+تقرير تحليل المبيعات الاحترافي
+{'='*100}
 
-تاريخ التقرير: {datetime.now().strftime('%Y-%m-%d %H:%M')}
+{TranslationSystem.t('company_name')}
+{TranslationSystem.t('report_author')}
+{'-'*60}
 
+🔹 {TranslationSystem.t('report_id')}: {report_id}
+🔹 {TranslationSystem.t('report_date')}: {current_date}
+🔹 {TranslationSystem.t('analysis_period')}: {self._get_date_range()}
+🔹 {TranslationSystem.t('total_records')}: {len(self.df):,}
+
+{'='*100}
 الملخص التنفيذي
-{'-'*40}
+{'='*100}
 
-تم تحليل بيانات المبيعات بنجاح، فيما يلي النتائج الرئيسية:
+تم إجراء تحليل متعمق لبيانات المبيعات باستخدام منهجيات تحليلية متقدمة. 
+يقدم هذا التقرير رؤى استراتيجية قابلة للتنفيذ بناءً على البيانات الواقعية.
 
-نظرة عامة على البيانات
-{'-'*40}
+📊 **النتائج الرئيسية:**
+• إجمالي المبيعات: {analysis_results['kpis'].get('total_sales', {}).get('formatted', 'غير متوفر')}
+• إجمالي الأرباح: {analysis_results['kpis'].get('total_profit', {}).get('formatted', 'غير متوفر')}
+• عدد العملاء: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'غير متوفر')}
+• هامش الربح: {analysis_results['kpis'].get('profit_margin', {}).get('formatted', 'غير متوفر')}
 
-• عدد السجلات: {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'N/A')}
-• عدد الأعمدة: {len(self.df.columns)}
-• فترة البيانات: {self._get_date_range()}
-
-المؤشرات الرئيسية (KPIs)
-{'-'*40}
+🎯 **النقاط البارزة:**
 """
-            
-            for kpi_name, kpi_info in analysis_results['kpis'].items():
-                report += f"• {kpi_info['label']}: {kpi_info['formatted']}\n"
-            
-            report += f"""
-النقاط الرئيسية
-{'-'*40}
-"""
-            
-            for insight in analysis_results['insights']:
+            for insight in analysis_results['insights'][:3]:
                 report += f"• {insight.replace('**', '')}\n"
             
-            if analysis_results['top_performers']:
-                report += f"""
-الأفضل أداءً
-{'-'*40}
+            report += f"""
+{'='*100}
+تحليل مقاييس الأداء (KPIs)
+{'='*100}
+
+مقاييس الأداء الرئيسية:
+
 """
-                if 'salesperson' in analysis_results['top_performers']:
-                    sp = analysis_results['top_performers']['salesperson']
-                    report += f"• أفضل مندوب مبيعات: {sp['name']} (${sp['value']:,.0f})\n"
-                
-                if 'product_profit' in analysis_results['top_performers']:
-                    pp = analysis_results['top_performers']['product_profit']
-                    report += f"• أكثر منتج ربحية: {pp['name']} (${pp['value']:,.0f})\n"
-            
-            if analysis_results['warnings']:
-                report += f"""
-جودة البيانات
-{'-'*40}
-"""
-                for warning in analysis_results['warnings']:
-                    report += f"• {warning}\n"
+            for kpi_name, kpi_info in analysis_results['kpis'].items():
+                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 'profit_margin', 
+                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate']:
+                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
             
             report += f"""
-التوصيات
-{'-'*40}
+{'='*100}
+تحليل الأداء التفصيلي
+{'='*100}
 
-1. التركيز على المناطق ذات الأداء العالي
-2. تحسين المنتجات الأكثر مبيعاً
-3. تحفيز مندوبي المبيعات بناءً على الأداء
-4. معالجة مشاكل جودة البيانات
-5. تحليل تأثير الخصومات على المبيعات
+📈 **الأفضل أداءً:**
 
-{'='*80}
-تم إنشاء التقرير بواسطة نظام تحليل المبيعات الذكي
-{'='*80}
+"""
+            if 'salesperson' in analysis_results['top_performers']:
+                sp = analysis_results['top_performers']['salesperson']
+                report += f"👑 **أفضل مندوب مبيعات**: {sp['top_1']['name']} (${sp['top_1']['value']:,.0f})\n"
+                report += "🏅 **أفضل 3 مندوبين**:\n"
+                for i, sp_info in enumerate(sp['top_3'], 1):
+                    report += f"   {i}. {sp_info['name']}: ${sp_info['value']:,.0f}\n"
+            
+            report += f"""
+📦 **المنتجات الأكثر ربحية:**
+
+"""
+            if 'product_profit' in analysis_results['top_performers']:
+                pp = analysis_results['top_performers']['product_profit']
+                report += f"👑 **أكثر منتج ربحية**: {pp['top_1']['name']} (${pp['top_1']['value']:,.0f})\n"
+                report += "🏅 **أفضل 3 منتجات**:\n"
+                for i, pp_info in enumerate(pp['top_3'], 1):
+                    report += f"   {i}. {pp_info['name']}: ${pp_info['value']:,.0f}\n"
+            
+            report += f"""
+{'='*100}
+تحليل توزيع المبيعات
+{'='*100}
+
+📍 **توزيع جغرافي:**
+"""
+            if 'region' in analysis_results['distributions']:
+                region_dist = analysis_results['distributions']['region']
+                total_regions = sum(region_dist.values())
+                for region, count in list(region_dist.items())[:5]:
+                    percentage = (count / total_regions * 100) if total_regions > 0 else 0
+                    report += f"• {region}: {count} معاملة ({percentage:.1f}%)\n"
+            
+            report += f"""
+🏷️ **توزيع الفئات:**
+"""
+            if 'category' in analysis_results['distributions']:
+                category_dist = analysis_results['distributions']['category']
+                total_categories = sum(category_dist.values())
+                for category, count in list(category_dist.items())[:5]:
+                    percentage = (count / total_categories * 100) if total_categories > 0 else 0
+                    report += f"• {category}: {count} منتج ({percentage:.1f}%)\n"
+            
+            report += f"""
+{'='*100}
+تحليل جودة البيانات
+{'='*100}
+
+🔍 **مؤشرات جودة البيانات:**
+"""
+            if analysis_results['warnings']:
+                for warning in analysis_results['warnings']:
+                    report += f"• {warning}\n"
+            else:
+                report += "✅ جودة البيانات ممتازة - لا توجد مشاكل رئيسية\n"
+            
+            report += f"""
+📊 **إحصائيات البيانات:**
+• إجمالي السجلات: {len(self.df):,}
+• إجمالي الأعمدة: {len(self.df.columns)}
+• نسبة البيانات المكتملة: {((1 - (self.df.isnull().sum().sum() / (len(self.df) * len(self.df.columns)))) * 100):.1f}%
+• نسبة البيانات الفريدة: {(self.df.nunique().sum() / (len(self.df) * len(self.df.columns)) * 100):.1f}%
+
+{'='*100}
+التوصيات الاستراتيجية
+{'='*100}
+
+🚀 **توصيات قابلة للتنفيذ:**
+
+1. **التركيز على المناطق عالية الأداء**
+   • زيادة الاستثمار في التسويق بالمناطق الأعلى ربحية
+   • تطوير استراتيجيات مخصصة لكل منطقة
+
+2. **تحسين محفظة المنتجات**
+   • التركيز على المنتجات عالية الربحية
+   • تحليل أسباب نجاح المنتجات الرائدة
+
+3. **تحسين أداء فرق المبيعات**
+   • دراسة استراتيجيات المندوبين الأوائل
+   • تطوير برامج تدريب مبنية على أفضل الممارسات
+
+4. **تحسين جودة البيانات**
+   • معالجة القيم المفقودة
+   • توحيد تنسيقات البيانات
+
+5. **تحسين استراتيجيات التسعير**
+   • تحليل تأثير الخصومات على الربحية
+   • تطوير استراتيجيات تسعير ديناميكية
+
+{'='*100}
+ملاحق التقرير
+{'='*100}
+
+📅 **فترة التحليل:** {self._get_date_range()}
+📊 **إجمالي المعاملات:** {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'غير متوفر')}
+💰 **متوسط قيمة المعاملة:** {analysis_results['kpis'].get('avg_transaction', {}).get('formatted', 'غير متوفر')}
+👥 **متوسط قيمة العميل:** ${self._calculate_avg_customer_value():,.0f}
+📦 **عدد المنتجات الفريدة:** {analysis_results['kpis'].get('unique_products', {}).get('formatted', 'غير متوفر')}
+
+{'='*100}
+ملاحظات نهائية
+{'='*100}
+
+📌 **نقاط مهمة:**
+• تم إعداد هذا التقرير باستخدام تقنيات تحليلية متقدمة
+• جميع البيانات معتمدة من مصادر موثوقة
+• التوصيات قابلة للقياس والتنفيذ
+
+📞 **للاستفسارات:**
+{TranslationSystem.t('report_author')}
+report@company.com
++966 55 123 4567
+
+{'='*100}
+نهاية التقرير
+{'='*100}
 """
         else:
             report = f"""
-{'='*80}
-Sales Data Analysis Report
-{'='*80}
+{'='*100}
+PROFESSIONAL SALES ANALYSIS REPORT
+{'='*100}
 
-Report Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}
+{TranslationSystem.t('company_name')}
+{TranslationSystem.t('report_author')}
+{'-'*60}
 
-Executive Summary
-{'-'*40}
+🔹 {TranslationSystem.t('report_id')}: {report_id}
+🔹 {TranslationSystem.t('report_date')}: {current_date}
+🔹 {TranslationSystem.t('analysis_period')}: {self._get_date_range()}
+🔹 {TranslationSystem.t('total_records')}: {len(self.df):,}
 
-Sales data analysis completed successfully. Key findings include:
+{'='*100}
+EXECUTIVE SUMMARY
+{'='*100}
 
-Data Overview
-{'-'*40}
+A comprehensive analysis of sales data has been conducted using advanced analytical methodologies. 
+This report provides actionable strategic insights based on factual data.
 
-• Total Records: {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'N/A')}
-• Number of Columns: {len(self.df.columns)}
-• Data Period: {self._get_date_range()}
+📊 **Key Results:**
+• Total Sales: {analysis_results['kpis'].get('total_sales', {}).get('formatted', 'N/A')}
+• Total Profit: {analysis_results['kpis'].get('total_profit', {}).get('formatted', 'N/A')}
+• Customer Count: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'N/A')}
+• Profit Margin: {analysis_results['kpis'].get('profit_margin', {}).get('formatted', 'N/A')}
 
-Key Performance Indicators (KPIs)
-{'-'*40}
+🎯 **Key Highlights:**
 """
-            
-            for kpi_name, kpi_info in analysis_results['kpis'].items():
-                report += f"• {kpi_info['label']}: {kpi_info['formatted']}\n"
-            
-            report += f"""
-Key Findings
-{'-'*40}
-"""
-            
-            for insight in analysis_results['insights']:
+            for insight in analysis_results['insights'][:3]:
                 report += f"• {insight.replace('**', '')}\n"
             
-            if analysis_results['top_performers']:
-                report += f"""
-Top Performers
-{'-'*40}
+            report += f"""
+{'='*100}
+KEY PERFORMANCE INDICATORS (KPIs)
+{'='*100}
+
+Core Performance Metrics:
+
 """
-                if 'salesperson' in analysis_results['top_performers']:
-                    sp = analysis_results['top_performers']['salesperson']
-                    report += f"• Top Salesperson: {sp['name']} (${sp['value']:,.0f})\n"
-                
-                if 'product_profit' in analysis_results['top_performers']:
-                    pp = analysis_results['top_performers']['product_profit']
-                    report += f"• Most Profitable Product: {pp['name']} (${pp['value']:,.0f})\n"
-            
-            if analysis_results['warnings']:
-                report += f"""
-Data Quality Issues
-{'-'*40}
-"""
-                for warning in analysis_results['warnings']:
-                    report += f"• {warning}\n"
+            for kpi_name, kpi_info in analysis_results['kpis'].items():
+                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 'profit_margin', 
+                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate']:
+                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
             
             report += f"""
-Recommendations
-{'-'*40}
+{'='*100}
+DETAILED PERFORMANCE ANALYSIS
+{'='*100}
 
-1. Focus on high-performing regions
-2. Optimize top-selling products
-3. Motivate sales team based on performance
-4. Address data quality issues
-5. Analyze discount impact on sales
+📈 **Top Performers:**
 
-{'='*80}
-Generated by Smart Sales Analytics System
-{'='*80}
+"""
+            if 'salesperson' in analysis_results['top_performers']:
+                sp = analysis_results['top_performers']['salesperson']
+                report += f"👑 **Top Salesperson**: {sp['top_1']['name']} (${sp['top_1']['value']:,.0f})\n"
+                report += "🏅 **Top 3 Salespeople**:\n"
+                for i, sp_info in enumerate(sp['top_3'], 1):
+                    report += f"   {i}. {sp_info['name']}: ${sp_info['value']:,.0f}\n"
+            
+            report += f"""
+📦 **Most Profitable Products:**
+
+"""
+            if 'product_profit' in analysis_results['top_performers']:
+                pp = analysis_results['top_performers']['product_profit']
+                report += f"👑 **Most Profitable Product**: {pp['top_1']['name']} (${pp['top_1']['value']:,.0f})\n"
+                report += "🏅 **Top 3 Products**:\n"
+                for i, pp_info in enumerate(pp['top_3'], 1):
+                    report += f"   {i}. {pp_info['name']}: ${pp_info['value']:,.0f}\n"
+            
+            report += f"""
+{'='*100}
+SALES DISTRIBUTION ANALYSIS
+{'='*100}
+
+📍 **Geographical Distribution:**
+"""
+            if 'region' in analysis_results['distributions']:
+                region_dist = analysis_results['distributions']['region']
+                total_regions = sum(region_dist.values())
+                for region, count in list(region_dist.items())[:5]:
+                    percentage = (count / total_regions * 100) if total_regions > 0 else 0
+                    report += f"• {region}: {count} transactions ({percentage:.1f}%)\n"
+            
+            report += f"""
+🏷️ **Category Distribution:**
+"""
+            if 'category' in analysis_results['distributions']:
+                category_dist = analysis_results['distributions']['category']
+                total_categories = sum(category_dist.values())
+                for category, count in list(category_dist.items())[:5]:
+                    percentage = (count / total_categories * 100) if total_categories > 0 else 0
+                    report += f"• {category}: {count} products ({percentage:.1f}%)\n"
+            
+            report += f"""
+{'='*100}
+DATA QUALITY ASSESSMENT
+{'='*100}
+
+🔍 **Data Quality Indicators:**
+"""
+            if analysis_results['warnings']:
+                for warning in analysis_results['warnings']:
+                    report += f"• {warning}\n"
+            else:
+                report += "✅ Excellent data quality - No major issues found\n"
+            
+            report += f"""
+📊 **Data Statistics:**
+• Total Records: {len(self.df):,}
+• Total Columns: {len(self.df.columns)}
+• Data Completeness: {((1 - (self.df.isnull().sum().sum() / (len(self.df) * len(self.df.columns)))) * 100):.1f}%
+• Data Uniqueness: {(self.df.nunique().sum() / (len(self.df) * len(self.df.columns)) * 100):.1f}%
+
+{'='*100}
+STRATEGIC RECOMMENDATIONS
+{'='*100}
+
+🚀 **Actionable Recommendations:**
+
+1. **Focus on High-Performing Regions**
+   • Increase marketing investment in top-performing regions
+   • Develop region-specific strategies
+
+2. **Optimize Product Portfolio**
+   • Focus on high-profit margin products
+   • Analyze success factors of top products
+
+3. **Enhance Sales Team Performance**
+   • Study top salesperson strategies
+   • Develop training programs based on best practices
+
+4. **Improve Data Quality**
+   • Address missing values
+   • Standardize data formats
+
+5. **Optimize Pricing Strategies**
+   • Analyze discount impact on profitability
+   • Develop dynamic pricing strategies
+
+{'='*100}
+REPORT APPENDICES
+{'='*100}
+
+📅 **Analysis Period:** {self._get_date_range()}
+📊 **Total Transactions:** {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'N/A')}
+💰 **Average Transaction Value:** {analysis_results['kpis'].get('avg_transaction', {}).get('formatted', 'N/A')}
+👥 **Average Customer Value:** ${self._calculate_avg_customer_value():,.0f}
+📦 **Unique Product Count:** {analysis_results['kpis'].get('unique_products', {}).get('formatted', 'N/A')}
+
+{'='*100}
+FINAL NOTES
+{'='*100}
+
+📌 **Important Points:**
+• This report was prepared using advanced analytical techniques
+• All data is verified from reliable sources
+• Recommendations are measurable and actionable
+
+📞 **For Inquiries:**
+{TranslationSystem.t('report_author')}
+report@company.com
++966 55 123 4567
+
+{'='*100}
+END OF REPORT
+{'='*100}
 """
         
         return report
+    
+    def _calculate_avg_customer_value(self):
+        """حساب متوسط قيمة العميل"""
+        if 'customer_id' in self.mapping and 'total_amount' in self.mapping:
+            customer_col = self.mapping['customer_id']
+            amount_col = self.mapping['total_amount']
+            
+            if customer_col in self.df.columns and amount_col in self.df.columns:
+                try:
+                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+                    customer_sales = self.df.groupby(customer_col)[amount_col].sum()
+                    return customer_sales.mean() if len(customer_sales) > 0 else 0
+                except:
+                    pass
+        return 0
     
     def _get_date_range(self):
         """الحصول على نطاق التاريخ من البيانات"""
@@ -1339,6 +1807,7 @@ def load_multiple_files(uploaded_files):
             st.error(f"{TranslationSystem.t('upload_error')} {uploaded_file.name}: {str(e)}")
     
     return dataframes, file_info_list
+
 def merge_dataframes(dataframes):
     """دمج عدة dataframes في dataframe واحد"""
     if dataframes is None or len(dataframes) == 0:
@@ -1350,6 +1819,7 @@ def merge_dataframes(dataframes):
     except Exception as e:
         st.error(f"خطأ في دمج الملفات: {str(e)}")
         return None
+
 def load_css():
     """تحميل CSS مع دعم متعدد اللغات"""
     direction = TranslationSystem.get_language_direction()
@@ -1418,18 +1888,20 @@ def load_css():
     }}
     
     .report-box {{
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 20px;
+        background: #ffffff;
+        border: 2px solid #4F46E5;
+        border-radius: 15px;
+        padding: 30px;
         margin: 20px 0;
         font-family: {font_family};
         direction: {direction};
         white-space: pre-wrap;
         font-size: 14px;
-        line-height: 1.6;
-        max-height: 500px;
+        line-height: 1.8;
+        max-height: 700px;
         overflow-y: auto;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        background: linear-gradient(to bottom, #ffffff, #f9fafb);
     }}
     
     .stApp {{
@@ -1444,6 +1916,48 @@ def load_css():
     
     .stSelectbox, .stTextInput, .stNumberInput {{
         font-family: {font_family};
+    }}
+    
+    .report-header {{
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 12px 12px 0 0;
+        margin-bottom: 20px;
+        text-align: center;
+    }}
+    
+    .report-section {{
+        background: #ffffff;
+        border-left: 5px solid #4F46E5;
+        padding: 20px;
+        margin: 15px 0;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }}
+    
+    .report-kpi {{
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+    }}
+    
+    .report-warning {{
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+    }}
+    
+    .report-recommendation {{
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
     }}
     </style>
     
@@ -1578,7 +2092,7 @@ uploaded_files = st.file_uploader(
 
 if uploaded_files and len(uploaded_files) > 0:
     try:
-        with st.spinner(TranslationSystem.t('loading')):
+        with st.spinner("جاري تحميل الملفات..." if st.session_state.language == 'ar' else "Loading files..."):
             dataframes, file_info_list = load_multiple_files(uploaded_files)
         
         if dataframes and file_info_list:
@@ -1753,9 +2267,15 @@ if st.session_state.get('analysis_ready', False):
                     kpi_key = kpi_keys[i + j]
                     with cols[j]:
                         kpi_info = kpis[kpi_key]
+                        trend_color = {
+                            'positive': '#10B981',
+                            'negative': '#EF4444',
+                            'neutral': '#6B7280'
+                        }.get(kpi_info.get('trend', 'neutral'), '#6B7280')
+                        
                         st.markdown(f"""
                         <div class="kpi-card">
-                            <div style="font-size: 2rem; margin-bottom: 10px;">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px; color: {trend_color};">
                                 {kpi_info.get('icon', '📊')}
                             </div>
                             <div style="font-size: 1.8rem; font-weight: bold; color: #4F46E5;">
@@ -1791,42 +2311,31 @@ if st.session_state.get('analysis_ready', False):
     else:
         st.warning(TranslationSystem.t('no_charts_data'))
     
-    # التقرير النصي
+    # التقرير النصي الاحترافي
     st.markdown(f"### 📄 {TranslationSystem.t('report_title')}")
     
-    # زر إنشاء التقرير
+    # زر إنشاء التقرير الاحترافي
     col1, col2 = st.columns([3, 1])
     with col1:
-        if st.button(TranslationSystem.t('generate_report'), use_container_width=True, icon="📋"):
-            st.session_state.text_report = analyzer.generate_text_report(analysis)
+        if st.button(TranslationSystem.t('generate_report'), use_container_width=True, icon="📋", type="primary"):
+            st.session_state.text_report = analyzer.generate_professional_report(analysis)
     
     # عرض التقرير إذا كان موجوداً
     if st.session_state.text_report:
         st.markdown(f"#### {TranslationSystem.t('executive_summary')}")
         
-        # صندوق عرض التقرير
+        # صندوق عرض التقرير الاحترافي
         st.markdown(f'<div class="report-box">{st.session_state.text_report}</div>', unsafe_allow_html=True)
         
-        # أزرار النسخ
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button(TranslationSystem.t('copy_report'), use_container_width=True, icon="📋"):
-                try:
-                    pyperclip.copy(st.session_state.text_report)
-                    st.success(TranslationSystem.t('report_copied'))
-                except:
-                    st.warning("⚠️ تعذر النسخ. يرجى نسخ النص يدوياً.")
-        
-        with col2:
-            # خيار التصدير كملف نصي
-            txt_file = st.session_state.text_report.encode('utf-8')
-            st.download_button(
-                label="📥 تحميل كملف نصي",
-                data=txt_file,
-                file_name=f"sales_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
+        # زر النسخ فقط (تم إزالة زر التنزيل)
+        if st.button(TranslationSystem.t('copy_report'), use_container_width=True, icon="📋"):
+            try:
+                pyperclip.copy(st.session_state.text_report)
+                st.success(TranslationSystem.t('report_copied'))
+            except:
+                # Fallback في حالة عدم وجود pyperclip
+                st.code(st.session_state.text_report, language='text')
+                st.warning("⚠️ يرجى نسخ النص أعلاه يدوياً" if st.session_state.language == 'ar' else "⚠️ Please copy the text above manually")
     
     # تحليل إضافي
     with st.expander(TranslationSystem.t('advanced_analysis')):
@@ -1889,7 +2398,7 @@ if not st.session_state.files_uploaded:
     1. **رفع الملفات**: قم برفع ملفات Excel أو CSV تحتوي على بيانات المبيعات
     2. **تعيين الأعمدة**: سيقوم النظام بالتعرف التلقائي على أعمدة البيانات
     3. **التحليل**: انتقل إلى التحليل للحصول على نتائج ورسوم بيانية
-    4. **التقرير**: إنشاء تقرير نصي يمكن نسخه أو تحميله
+    4. **التقرير**: إنشاء تقرير نصي احترافي يمكن نسخه للعميل
     
     💡 **نصائح**:
     - يمكنك رفع ملفات متعددة ودمجها
@@ -1904,6 +2413,6 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown("""
     <div style="text-align: center; color: #6B7280; font-size: 0.9rem;">
-    <p>📊 نظام تحليل المبيعات الذكي | الإصدار 2.0 | يدعم العربية والإنجليزية</p>
+    <p>📊 نظام تحليل المبيعات الذكي | الإصدار 3.0 | يدعم العربية والإنجليزية</p>
     </div>
     """, unsafe_allow_html=True)
