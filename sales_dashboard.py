@@ -10,7 +10,6 @@ import os
 import re
 import plotly.graph_objects as go
 import plotly.express as px
-import pyperclip  # لميزة النسخ
 from datetime import datetime
 from io import BytesIO
 
@@ -1340,8 +1339,17 @@ def load_multiple_files(uploaded_files):
             st.error(f"{TranslationSystem.t('upload_error')} {uploaded_file.name}: {str(e)}")
     
     return dataframes, file_info_list
-
-
+def merge_dataframes(dataframes):
+    """دمج عدة dataframes في dataframe واحد"""
+    if dataframes is None or len(dataframes) == 0:
+        return None
+    
+    try:
+        merged_df = pd.concat(dataframes, ignore_index=True, sort=False)
+        return merged_df
+    except Exception as e:
+        st.error(f"خطأ في دمج الملفات: {str(e)}")
+        return None
 def load_css():
     """تحميل CSS مع دعم متعدد اللغات"""
     direction = TranslationSystem.get_language_direction()
