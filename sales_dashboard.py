@@ -10,7 +10,6 @@ import os
 import re
 import plotly.graph_objects as go
 import plotly.express as px
-import pyperclip  # لميزة النسخ
 from datetime import datetime
 from io import BytesIO
 
