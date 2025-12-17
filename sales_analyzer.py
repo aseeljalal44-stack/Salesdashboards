@@ -88,7 +88,29 @@ class SalesDataAnalyzer:
                     }
                 except:
                     pass
-        
+                    
+ # هامش الربح (Profit Margin) — الحساب الصحيح
+if 'total_amount' in self.mapping and 'profit' in self.mapping:
+    amount_col = self.mapping['total_amount']
+    profit_col = self.mapping['profit']
+
+    if amount_col in self.df.columns and profit_col in self.df.columns:
+        try:
+            total_sales = pd.to_numeric(self.df[amount_col], errors='coerce').sum()
+            total_profit = pd.to_numeric(self.df[profit_col], errors='coerce').sum()
+
+            if total_sales > 0:
+                profit_margin = (total_profit / total_sales) * 100
+            else:
+                profit_margin = 0
+
+            kpis['profit_margin'] = {
+                'value': f"{profit_margin:.2f}%",
+                'label': 'هامش الربح',
+                'icon': '⚖️'
+            }
+        except:
+            pass       
         # عدد العملاء الفريدين
         if 'customer_id' in self.mapping:
             customer_col = self.mapping['customer_id']
