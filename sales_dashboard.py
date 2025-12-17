@@ -215,7 +215,6 @@ class TranslationSystem:
             'market_penetration': 'اختراق السوق',
             'customer_acquisition': 'اكتساب العملاء',
             'customer_retention': 'احتفاظ بالعملاء',
-            'profit_margin': 'هامش الربح',
             'return_on_investment': 'العائد على الاستثمار',
             'operational_efficiency': 'الكفاءة التشغيلية',
         },
@@ -415,7 +414,6 @@ class TranslationSystem:
             'market_penetration': 'Market Penetration',
             'customer_acquisition': 'Customer Acquisition',
             'customer_retention': 'Customer Retention',
-            'profit_margin': 'Profit Margin',
             'return_on_investment': 'Return on Investment',
             'operational_efficiency': 'Operational Efficiency',
         }
@@ -703,7 +701,6 @@ class SalesDataAnalyzer:
                 try:
                     self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
                     total_profit = self.df[profit_col].sum()
-                    profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
                     
                     kpis['total_profit'] = {
                         'value': total_profit,
@@ -711,14 +708,6 @@ class SalesDataAnalyzer:
                         'label': TranslationSystem.t('kpi_profit'),
                         'icon': '📈',
                         'trend': 'positive' if total_profit > 0 else 'negative'
-                    }
-                    
-                    kpis['profit_margin'] = {
-                        'value': profit_margin,
-                        'formatted': f"{profit_margin:.1f}%",
-                        'label': TranslationSystem.t('profit_margin'),
-                        'icon': '📊',
-                        'trend': 'positive' if profit_margin > 15 else 'neutral'
                     }
                 except:
                     pass
@@ -886,13 +875,6 @@ class SalesDataAnalyzer:
                         total_profit=(profit_col, 'sum'),
                         transaction_count=(amount_col, 'count')
                     ).reset_index()
-                    
-                    product_stats['profit_margin'] = (product_stats['total_profit'] / product_stats['total_sales'] * 100) if product_stats['total_sales'].sum() > 0 else 0
-                    
-                    # تصنيف المنتجات حسب الربحية
-                    product_stats['product_category'] = pd.qcut(product_stats['profit_margin'], 
-                                                              q=4, 
-                                                              labels=['Low Profit', 'Medium Profit', 'High Profit', 'Premium'])
                     
                     product_analysis['product_stats'] = product_stats.to_dict('records')
                     
@@ -1224,7 +1206,7 @@ class SalesDataAnalyzer:
 • إجمالي المبيعات: {analysis_results['kpis'].get('total_sales', {}).get('formatted', 'غير متوفر')}
 • إجمالي الأرباح: {analysis_results['kpis'].get('total_profit', {}).get('formatted', 'غير متوفر')}
 • عدد العملاء: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'غير متوفر')}
-• هامش الربح: {analysis_results['kpis'].get('profit_margin', {}).get('formatted', 'غير متوفر')}
+• هامش الربح الإجمالي: {analysis_results['kpis'].get('gross_margin', {}).get('formatted', 'غير متوفر')}
 
 🎯 **النقاط البارزة:**
 """
@@ -1240,9 +1222,9 @@ class SalesDataAnalyzer:
 
 """
             for kpi_name, kpi_info in analysis_results['kpis'].items():
-                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 'profit_margin', 
+                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 
                                'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate',
-                               'gross_profit', 'gross_margin']:
+                               'gross_profit', 'gross_margin', 'avg_transaction']:
                     report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
             
             report += f"""
@@ -1438,7 +1420,7 @@ This report provides actionable strategic insights based on factual data.
 • Total Sales: {analysis_results['kpis'].get('total_sales', {}).get('formatted', 'N/A')}
 • Total Profit: {analysis_results['kpis'].get('total_profit', {}).get('formatted', 'N/A')}
 • Customer Count: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'N/A')}
-• Profit Margin: {analysis_results['kpis'].get('profit_margin', {}).get('formatted', 'N/A')}
+• Gross Profit Margin: {analysis_results['kpis'].get('gross_margin', {}).get('formatted', 'N/A')}
 
 🎯 **Key Highlights:**
 """
@@ -1454,9 +1436,9 @@ Core Performance Metrics:
 
 """
             for kpi_name, kpi_info in analysis_results['kpis'].items():
-                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 'profit_margin', 
+                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 
                                'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate',
-                               'gross_profit', 'gross_margin']:
+                               'gross_profit', 'gross_margin', 'avg_transaction']:
                     report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
             
             report += f"""
@@ -2049,14 +2031,38 @@ def merge_dataframes(dataframes):
         return None
 
 def load_css():
-    """تحميل CSS مع دعم متعدد اللغات"""
+    """تحميل CSS مع دعم متعدد اللغات والوضع الداكن"""
     direction = TranslationSystem.get_language_direction()
     font_family = TranslationSystem.get_font_family()
+    is_dark = st.session_state.get('theme', 'light') == 'dark'
+    
+    # ألوان الوضع الداكن
+    if is_dark:
+        background_color = "#0E1117"
+        text_color = "#FFFFFF"
+        card_background = "#262730"
+        border_color = "#3A3A4A"
+        header_background = "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)"
+    else:
+        background_color = "#FFFFFF"
+        text_color = "#000000"
+        card_background = "#FFFFFF"
+        border_color = "#e2e8f0"
+        header_background = "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)"
     
     css = f"""
     <style>
+    /* أساسيات */
+    .stApp {{
+        background-color: {background_color};
+        color: {text_color};
+        font-family: {font_family};
+        text-align: {direction};
+    }}
+    
+    /* العنوان الرئيسي */
     .main-header {{
-        background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+        background: {header_background};
         color: white;
         padding: 30px;
         border-radius: 15px;
@@ -2065,17 +2071,19 @@ def load_css():
         font-family: {font_family};
     }}
     
+    /* بطاقات KPIs */
     .kpi-card {{
-        background: white;
+        background: {card_background};
         border-radius: 12px;
         padding: 20px;
         margin: 10px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid {border_color};
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         text-align: center;
         transition: all 0.3s ease;
         font-family: {font_family};
         direction: {direction};
+        color: {text_color};
     }}
     
     .kpi-card:hover {{
@@ -2083,31 +2091,35 @@ def load_css():
         box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }}
     
+    /* منطقة رفع الملفات */
     .upload-box {{
         border: 2px dashed #4F46E5;
         border-radius: 12px;
         padding: 40px;
         text-align: center;
-        background: #f7fafc;
+        background: {card_background};
         margin: 20px 0;
         font-family: {font_family};
         direction: {direction};
     }}
     
+    /* بطاقات الملفات */
     .file-card {{
-        background: white;
+        background: {card_background};
         border-radius: 10px;
         padding: 15px;
         margin: 10px 0;
-        border: 1px solid #e2e8f0;
+        border: 1px solid {border_color};
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         font-family: {font_family};
         direction: {direction};
     }}
     
+    /* صندوق التحذيرات */
     .warning-box {{
-        background: #fff3cd;
-        border: 1px solid #ffeaa7;
+        background: {is_dark and '#2d230c' or '#fff3cd'};
+        border: 1px solid {is_dark and '#665412' or '#ffeaa7'};
+        color: {is_dark and '#ffd700' or '#856404'};
         border-radius: 8px;
         padding: 15px;
         margin: 10px 0;
@@ -2115,8 +2127,10 @@ def load_css():
         direction: {direction};
     }}
     
+    /* صندوق التقرير - محدث للوضع الداكن */
     .report-box {{
-        background: #ffffff;
+        background: {card_background};
+        color: {text_color};
         border: 2px solid #4F46E5;
         border-radius: 15px;
         padding: 30px;
@@ -2129,25 +2143,24 @@ def load_css():
         max-height: 700px;
         overflow-y: auto;
         box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-        background: linear-gradient(to bottom, #ffffff, #f9fafb);
     }}
     
-    .stApp {{
-        font-family: {font_family};
-        text-align: {direction};
-    }}
-    
+    /* الأزرار */
     .stButton > button {{
         border-radius: 8px;
         font-family: {font_family};
     }}
     
+    /* عناصر التحكم */
     .stSelectbox, .stTextInput, .stNumberInput {{
         font-family: {font_family};
+        color: {text_color};
+        background-color: {card_background};
     }}
     
+    /* رؤوس التقارير */
     .report-header {{
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        background: {is_dark and 'linear-gradient(135deg, #0c2461 0%, #1e3799 100%)' or 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)'};
         color: white;
         padding: 25px;
         border-radius: 12px 12px 0 0;
@@ -2155,37 +2168,85 @@ def load_css():
         text-align: center;
     }}
     
+    /* أقسام التقرير */
     .report-section {{
-        background: #ffffff;
+        background: {card_background};
         border-left: 5px solid #4F46E5;
         padding: 20px;
         margin: 15px 0;
         border-radius: 8px;
         box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        color: {text_color};
     }}
     
+    /* KPI في التقرير */
     .report-kpi {{
-        background: #f0f9ff;
-        border: 1px solid #bae6fd;
+        background: {is_dark and '#1a3a5f' or '#f0f9ff'};
+        border: 1px solid {is_dark and '#2a4a7f' or '#bae6fd'};
         padding: 15px;
         margin: 10px 0;
         border-radius: 8px;
+        color: {text_color};
     }}
     
+    /* تحذيرات التقرير */
     .report-warning {{
-        background: #fff7ed;
-        border: 1px solid #fed7aa;
+        background: {is_dark and '#3a2a0c' or '#fff7ed'};
+        border: 1px solid {is_dark and '#5a4a2c' or '#fed7aa'};
         padding: 15px;
         margin: 10px 0;
         border-radius: 8px;
+        color: {is_dark and '#ffd700' or '#92400e'};
     }}
     
+    /* توصيات التقرير */
     .report-recommendation {{
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
+        background: {is_dark and '#0c3a1c' or '#f0fdf4'};
+        border: 1px solid {is_dark and '#1c4a2c' or '#bbf7d0'};
         padding: 15px;
         margin: 10px 0;
         border-radius: 8px;
+        color: {text_color};
+    }}
+    
+    /* نصوص Streamlit الافتراضية */
+    .stMarkdown, .stText, .stDataFrame, .stMetric {{
+        color: {text_color} !important;
+    }}
+    
+    /* الجداول */
+    .dataframe {{
+        background-color: {card_background} !important;
+        color: {text_color} !important;
+    }}
+    
+    /* الرؤوس في الجداول */
+    .dataframe thead th {{
+        background-color: {is_dark and '#262730' or '#f8f9fa'} !important;
+        color: {text_color} !important;
+    }}
+    
+    /* الخلايا في الجداول */
+    .dataframe td {{
+        color: {text_color} !important;
+    }}
+    
+    /* التحديد في الجداول */
+    .dataframe tbody tr:hover {{
+        background-color: {is_dark and '#3A3A4A' or '#f1f5f9'} !important;
+    }}
+    
+    /* الأقسام القابلة للطي */
+    .streamlit-expanderHeader {{
+        background-color: {card_background} !important;
+        color: {text_color} !important;
+        border-color: {border_color} !important;
+    }}
+    
+    /* محتوى الأقسام القابلة للطي */
+    .streamlit-expanderContent {{
+        background-color: {card_background} !important;
+        color: {text_color} !important;
     }}
     </style>
     
