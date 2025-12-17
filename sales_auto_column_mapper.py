@@ -43,10 +43,6 @@ class SalesAutoColumnMapper:
                 'patterns': ['quantity', 'qty', 'amount', 'الكمية', 'عدد', 'مقدار'],
                 'keywords': ['quantity', 'qty', 'كمية', 'عدد']
             },
-            'price': {
-                'patterns': ['price', 'unit.*price', 'cost', 'سعر', 'السعر', 'التكلفة'],
-                'keywords': ['price', 'cost', 'سعر', 'تكلفة']
-            },
             'total_amount': {
                 'patterns': ['total', 'amount', 'revenue', 'المبلغ', 'الإجمالي', 'الإيراد'],
                 'keywords': ['total', 'amount', 'revenue', 'إجمالي', 'مبلغ']
@@ -59,13 +55,9 @@ class SalesAutoColumnMapper:
                 'patterns': ['region', 'area', 'zone', 'منطقة', 'المنطقة', 'الفرع'],
                 'keywords': ['region', 'area', 'zone', 'منطقة']
             },
-            'city': {
-                'patterns': ['city', 'town', 'المدينة', 'مدينة'],
-                'keywords': ['city', 'town', 'مدينة']
-            },
-            'country': {
-                'patterns': ['country', 'state', 'البلد', 'الدولة'],
-                'keywords': ['country', 'state', 'بلد', 'دولة']
+            'cost': {
+                'patterns': ['cost', 'تكلفة', 'التكلفة'],
+                'keywords': ['cost', 'تكلفة']
             },
             'salesperson': {
                 'patterns': ['salesperson', 'seller', 'agent', 'مندوب', 'البائع', 'الموظف'],
@@ -78,14 +70,6 @@ class SalesAutoColumnMapper:
             'discount': {
                 'patterns': ['discount', 'off', 'خصم', 'التخفيض'],
                 'keywords': ['discount', 'خصم', 'تخفيض']
-            },
-            'profit': {
-                'patterns': ['profit', 'margin', 'ربح', 'الربح', 'هامش'],
-                'keywords': ['profit', 'margin', 'ربح', 'هامش']
-            },
-            'status': {
-                'patterns': ['status', 'state', 'condition', 'حالة', 'الحالة'],
-                'keywords': ['status', 'state', 'حالة']
             }
         }
     
@@ -97,27 +81,21 @@ class SalesAutoColumnMapper:
         for column in columns:
             column_lower = str(column).lower()
             
-            # البحث عن تطابقات في الأنماط
             for field_type, patterns_info in self.column_patterns.items():
-                # البحث في الأنماط
                 for pattern in patterns_info['patterns']:
                     if re.search(pattern, column_lower, re.IGNORECASE):
                         suggestions[field_type] = column
                         break
                 
-                # البحث في الكلمات المفتاحية
                 if field_type not in suggestions:
                     for keyword in patterns_info['keywords']:
                         if keyword.lower() in column_lower:
                             suggestions[field_type] = column
                             break
             
-            # محاولة التعرف على التواريخ
             if self._is_date_column(column):
                 if 'order_date' not in suggestions:
                     suggestions['order_date'] = column
-                elif 'delivery_date' not in suggestions:
-                    suggestions['delivery_date'] = column
         
         return suggestions
     
@@ -131,46 +109,13 @@ class SalesAutoColumnMapper:
         if len(column_sample) == 0:
             return False
         
-        # محاولة التحويل إلى تاريخ
         try:
-            # إذا كان النوع بالفعل datetime
             if pd.api.types.is_datetime64_any_dtype(self.df[column_name]):
                 return True
             
-            # اختبار التحويل
             test_dates = pd.to_datetime(column_sample, errors='coerce')
             success_rate = test_dates.notna().sum() / len(column_sample)
             
-            return success_rate > 0.7  # إذا نجح في 70% من الحالات
+            return success_rate > 0.7
         except:
             return False
-    
-    def suggest_column_types(self):
-        """اقتراح أنواع البيانات للأعمدة"""
-        column_types = {}
-        
-        for column in self.df.columns:
-            dtype = str(self.df[column].dtype)
-            
-            # فحص النوع
-            if pd.api.types.is_numeric_dtype(self.df[column]):
-                column_types[column] = 'numeric'
-            elif pd.api.types.is_datetime64_any_dtype(self.df[column]):
-                column_types[column] = 'date'
-            elif self._is_categorical_column(column):
-                column_types[column] = 'categorical'
-            else:
-                column_types[column] = 'text'
-        
-        return column_types
-    
-    def _is_categorical_column(self, column_name, max_unique_ratio=0.3):
-        """فحص إذا كان العمود فئوي"""
-        unique_count = self.df[column_name].nunique()
-        total_count = len(self.df[column_name].dropna())
-        
-        if total_count == 0:
-            return False
-        
-        unique_ratio = unique_count / total_count
-        return unique_ratio <= max_unique_ratio and unique_count < 50
