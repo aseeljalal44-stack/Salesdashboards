@@ -191,8 +191,6 @@ class TranslationSystem:
             'info': 'معلومة',
             
             # مصطلحات إضافية للتقرير
-            'company_name': 'شركة التميز التجارية',
-            'report_author': 'إدارة التحليلات والأبحاث',
             'report_id': 'رقم التقرير',
             'report_period': 'فترة التقرير',
             'market_share': 'حصصة السوق',
