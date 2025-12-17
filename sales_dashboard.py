@@ -593,7 +593,7 @@ class SalesDataAnalyzer:
         analysis_results['product_analysis'] = self._analyze_product_portfolio()
         
         return analysis_results
-    def _calculate_kpis(self):
+  def _calculate_kpis(self):
     """حساب مؤشرات أداء المبيعات"""
     kpis = {}
     
@@ -674,9 +674,9 @@ class SalesDataAnalyzer:
     
     # حساب هامش الربح
     if 'total_sales' in kpis:
-        total_sales = kpis['total_sales']['value']
-        if total_sales > 0:
-            profit_margin = (total_profit / total_sales) * 100
+        total_sales_value = kpis['total_sales']['value']
+        if total_sales_value > 0:
+            profit_margin = (total_profit / total_sales_value) * 100
         else:
             profit_margin = 0
     else:
@@ -751,7 +751,7 @@ class SalesDataAnalyzer:
             try:
                 self.df[discount_col] = pd.to_numeric(self.df[discount_col], errors='coerce')
                 total_discount = self.df[discount_col].sum()
-                discount_rate = (total_discount / total_sales * 100) if total_sales > 0 else 0
+                discount_rate = (total_discount / total_sales_value * 100) if total_sales_value > 0 else 0
                 
                 kpis['discount_rate'] = {
                     'value': discount_rate,
