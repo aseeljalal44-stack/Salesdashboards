@@ -25,6 +25,14 @@ class TranslationSystem:
             'dashboard_title': '📊 لوحة تحكم المبيعات الذكية',
             'dashboard_subtitle': 'تحليل ذكي لبيانات المبيعات - رفع ملفات Excel/CSV متعددة',
             
+            # هامش الربح الجديد
+            'gross_profit_margin': 'هامش الربح الإجمالي',
+            'gross_profit': 'الربح الإجمالي',
+            'cost_of_goods_sold': 'تكلفة البضاعة المباعة',
+            'gross_margin_formula': '(المبيعات - تكلفة البضاعة المباعة) ÷ المبيعات × 100',
+            'calculate_gross_margin': 'حساب هامش الربح الإجمالي',
+            'gross_margin_insight': 'تحليل هامش الربح الإجمالي',
+            
             # الشريط الجانبي
             'sidebar_settings': '⚙️ الإعدادات',
             'language': 'اللغة',
@@ -118,7 +126,6 @@ class TranslationSystem:
             'kpi_products': 'عدد المنتجات',
             'kpi_avg_quantity': 'متوسط الكمية',
             'kpi_discount_rate': 'معدل الخصم',
-            'kpi_profit_margin': 'هامش الربح',
             
             # الرسوم البيانية
             'charts_title': '📊 الرسوم البيانية',
@@ -218,6 +225,14 @@ class TranslationSystem:
             'dashboard_title': '📊 Smart Sales Analytics Dashboard',
             'dashboard_subtitle': 'Intelligent sales data analysis - Upload multiple Excel/CSV files',
             
+            # Gross Profit Margin New
+            'gross_profit_margin': 'Gross Profit Margin',
+            'gross_profit': 'Gross Profit',
+            'cost_of_goods_sold': 'Cost of Goods Sold',
+            'gross_margin_formula': '(Sales - COGS) ÷ Sales × 100',
+            'calculate_gross_margin': 'Calculate Gross Profit Margin',
+            'gross_margin_insight': 'Gross Margin Analysis',
+            
             # Sidebar
             'sidebar_settings': '⚙️ Settings',
             'language': 'Language',
@@ -311,7 +326,6 @@ class TranslationSystem:
             'kpi_products': 'Number of Products',
             'kpi_avg_quantity': 'Average Quantity',
             'kpi_discount_rate': 'Discount Rate',
-            'kpi_profit_margin': 'Profit Margin',
             
             # Charts
             'charts_title': '📊 Charts & Visualizations',
@@ -510,13 +524,13 @@ class SalesAutoColumnMapper:
                 'patterns': ['profit', 'margin', 'ربح', 'الربح', 'هامش'],
                 'keywords': ['profit', 'margin', 'ربح', 'هامش']
             },
+            'cost': {
+                'patterns': ['cost', 'تكلفة', 'التكلفة', 'سعر.*التكلفة'],
+                'keywords': ['cost', 'تكلفة', 'cost', 'price']
+            },
             'status': {
                 'patterns': ['status', 'state', 'condition', 'حالة', 'الحالة'],
                 'keywords': ['status', 'state', 'حالة']
-            },
-            'cost': {
-                'patterns': ['cost', 'تكلفة', 'السعر.*التكلفة', 'قيمة.*التكلفة'],
-                'keywords': ['cost', 'تكلفة']
             }
         }
     
@@ -601,7 +615,7 @@ class SalesDataAnalyzer:
         return analysis_results
     
     def _calculate_kpis(self):
-        """حساب مؤشرات أداء المبيعات - تم تحسين حساب هامش الربح"""
+        """حساب مؤشرات أداء المبيعات"""
         kpis = {}
         
         # إجمالي عدد المعاملات
@@ -615,7 +629,6 @@ class SalesDataAnalyzer:
         }
         
         # إجمالي المبيعات
-        total_sales = 0
         if 'total_amount' in self.mapping:
             amount_col = self.mapping['total_amount']
             if amount_col in self.df.columns:
@@ -624,91 +637,91 @@ class SalesDataAnalyzer:
                     total_sales = self.df[amount_col].sum()
                     kpis['total_sales'] = {
                         'value': total_sales,
-                        'formatted': f"${total_sales:,.0f}" if total_sales >= 1000 else f"${total_sales:,.2f}",
+                        'formatted': f"${total_sales:,.0f}",
                         'label': TranslationSystem.t('kpi_sales'),
                         'icon': '💰',
                         'trend': 'positive' if total_sales > 0 else 'negative'
                     }
                     
-                    # متوسط قيمة المعاملة
+                    # حساب الربح الإجمالي وهامش الربح الإجمالي
+                    if 'cost' in self.mapping:
+                        cost_col = self.mapping['cost']
+                        if cost_col in self.df.columns:
+                            try:
+                                self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
+                                
+                                # حساب تكلفة البضاعة المباعة
+                                if 'quantity' in self.mapping:
+                                    quantity_col = self.mapping['quantity']
+                                    if quantity_col in self.df.columns:
+                                        self.df[quantity_col] = pd.to_numeric(self.df[quantity_col], errors='coerce')
+                                        
+                                        # إذا كان العمود "cost" يمثل تكلفة الوحدة
+                                        if (self.df[cost_col] > 0).any() and (self.df[cost_col] < self.df[amount_col]).any():
+                                            # cost_col هو تكلفة الوحدة
+                                            total_cogs = (self.df[cost_col] * self.df[quantity_col]).sum()
+                                        else:
+                                            # cost_col قد يكون التكلفة الإجمالية
+                                            total_cogs = self.df[cost_col].sum()
+                                        
+                                        gross_profit = total_sales - total_cogs
+                                        gross_margin = (gross_profit / total_sales * 100) if total_sales > 0 else 0
+                                        
+                                        kpis['gross_profit'] = {
+                                            'value': gross_profit,
+                                            'formatted': f"${gross_profit:,.0f}",
+                                            'label': TranslationSystem.t('gross_profit'),
+                                            'icon': '📊',
+                                            'trend': 'positive' if gross_profit > 0 else 'negative'
+                                        }
+                                        
+                                        kpis['gross_margin'] = {
+                                            'value': gross_margin,
+                                            'formatted': f"{gross_margin:.1f}%",
+                                            'label': TranslationSystem.t('gross_profit_margin'),
+                                            'icon': '📈',
+                                            'trend': 'positive' if gross_margin > 30 else 'neutral' if gross_margin > 20 else 'negative'
+                                        }
+                            except:
+                                pass
+                    
                     avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
                     kpis['avg_transaction'] = {
                         'value': avg_transaction,
-                        'formatted': f"${avg_transaction:,.2f}",
+                        'formatted': f"${avg_transaction:,.0f}",
                         'label': TranslationSystem.t('kpi_avg_transaction'),
                         'icon': '📊',
                         'trend': 'positive' if avg_transaction > 0 else 'negative'
                     }
                 except:
-                    kpis['total_sales'] = {
-                        'value': 0,
-                        'formatted': "$0",
-                        'label': TranslationSystem.t('kpi_sales'),
-                        'icon': '💰',
-                        'trend': 'neutral'
-                    }
+                    pass
         
-        # إجمالي الربح وتحسين حساب هامش الربح
-        total_profit = 0
+        # إجمالي الربح
         if 'profit' in self.mapping:
             profit_col = self.mapping['profit']
             if profit_col in self.df.columns:
                 try:
                     self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
                     total_profit = self.df[profit_col].sum()
+                    profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
                     
                     kpis['total_profit'] = {
                         'value': total_profit,
-                        'formatted': f"${total_profit:,.0f}" if total_profit >= 1000 else f"${total_profit:,.2f}",
+                        'formatted': f"${total_profit:,.0f}",
                         'label': TranslationSystem.t('kpi_profit'),
                         'icon': '📈',
                         'trend': 'positive' if total_profit > 0 else 'negative'
                     }
                     
-                    # حساب هامش الربح بدقة أعلى
-                    profit_margin = 0
-                    if total_sales > 0:
-                        profit_margin = (total_profit / total_sales) * 100
-                    
-                    # تقييم صحة هامش الربح
-                    if profit_margin > 100 or profit_margin < -100:
-                        # إذا كان هامش الربح غير منطقي، نستخدم حساب بديل
-                        if 'cost' in self.mapping:
-                            cost_col = self.mapping['cost']
-                            if cost_col in self.df.columns:
-                                try:
-                                    self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
-                                    total_cost = self.df[cost_col].sum()
-                                    if total_cost > 0:
-                                        profit_margin = ((total_sales - total_cost) / total_sales) * 100
-                                except:
-                                    pass
-                    
                     kpis['profit_margin'] = {
                         'value': profit_margin,
-                        'formatted': f"{profit_margin:.2f}%",
-                        'label': TranslationSystem.t('kpi_profit_margin'),
-                        'icon': '💹',
-                        'trend': self._get_margin_trend(profit_margin),
-                        'description': self._get_margin_description(profit_margin)
+                        'formatted': f"{profit_margin:.1f}%",
+                        'label': TranslationSystem.t('profit_margin'),
+                        'icon': '📊',
+                        'trend': 'positive' if profit_margin > 15 else 'neutral'
                     }
-                    
                 except:
-                    kpis['total_profit'] = {
-                        'value': 0,
-                        'formatted': "$0",
-                        'label': TranslationSystem.t('kpi_profit'),
-                        'icon': '📈',
-                        'trend': 'neutral'
-                    }
-                    kpis['profit_margin'] = {
-                        'value': 0,
-                        'formatted': "0%",
-                        'label': TranslationSystem.t('kpi_profit_margin'),
-                        'icon': '💹',
-                        'trend': 'neutral',
-                        'description': "لا توجد بيانات كافية"
-                    }
+                    pass
         
         # عدد العملاء الفريدين
         if 'customer_id' in self.mapping:
@@ -745,7 +758,7 @@ class SalesDataAnalyzer:
                     avg_quantity = self.df[quantity_col].mean()
                     kpis['avg_quantity'] = {
                         'value': avg_quantity,
-                        'formatted': f"{avg_quantity:.2f}",
+                        'formatted': f"{avg_quantity:.1f}",
                         'label': TranslationSystem.t('kpi_avg_quantity'),
                         'icon': '⚖️',
                         'trend': 'positive' if avg_quantity > 1 else 'neutral'
@@ -765,7 +778,7 @@ class SalesDataAnalyzer:
                     
                     kpis['discount_rate'] = {
                         'value': discount_rate,
-                        'formatted': f"{discount_rate:.2f}%",
+                        'formatted': f"{discount_rate:.1f}%",
                         'label': TranslationSystem.t('kpi_discount_rate'),
                         'icon': '🎯',
                         'trend': 'positive' if discount_rate < 10 else 'neutral'
@@ -774,32 +787,6 @@ class SalesDataAnalyzer:
                     pass
         
         return kpis
-    
-    def _get_margin_trend(self, margin):
-        """تحديد اتجاه هامش الربح"""
-        if margin >= 20:
-            return 'positive'
-        elif margin >= 10:
-            return 'neutral'
-        else:
-            return 'negative'
-    
-    def _get_margin_description(self, margin):
-        """توليد وصف لهامش الربح"""
-        if margin > 50:
-            return "هامش ربح ممتاز"
-        elif margin > 30:
-            return "هامش ربح عالي"
-        elif margin > 15:
-            return "هامش رحم جيد"
-        elif margin > 5:
-            return "هامش رحم مقبول"
-        elif margin > 0:
-            return "هامش رحم منخفض"
-        elif margin == 0:
-            return "لا يوجد ربح"
-        else:
-            return "خسارة"
     
     def _calculate_growth_metrics(self):
         """حساب مقاييس النمو"""
@@ -828,8 +815,8 @@ class SalesDataAnalyzer:
                             
                             growth_metrics['mom_growth'] = {
                                 'value': month_over_month_growth,
-                                'formatted': f"{month_over_month_growth:+.2f}%",
-                                'label': 'النمو الشهري'
+                                'formatted': f"{month_over_month_growth:+.1f}%",
+                                'label': 'Month-over-Month Growth'
                             }
                 except:
                     pass
@@ -900,17 +887,12 @@ class SalesDataAnalyzer:
                         transaction_count=(amount_col, 'count')
                     ).reset_index()
                     
-                    product_stats['profit_margin'] = 0
-                    if product_stats['total_sales'].sum() > 0:
-                        product_stats['profit_margin'] = (product_stats['total_profit'] / product_stats['total_sales'] * 100)
+                    product_stats['profit_margin'] = (product_stats['total_profit'] / product_stats['total_sales'] * 100) if product_stats['total_sales'].sum() > 0 else 0
                     
                     # تصنيف المنتجات حسب الربحية
-                    try:
-                        product_stats['product_category'] = pd.qcut(product_stats['profit_margin'], 
-                                                                  q=4, 
-                                                                  labels=['Low Profit', 'Medium Profit', 'High Profit', 'Premium'])
-                    except:
-                        product_stats['product_category'] = 'Medium Profit'
+                    product_stats['product_category'] = pd.qcut(product_stats['profit_margin'], 
+                                                              q=4, 
+                                                              labels=['Low Profit', 'Medium Profit', 'High Profit', 'Premium'])
                     
                     product_analysis['product_stats'] = product_stats.to_dict('records')
                     
@@ -991,8 +973,9 @@ class SalesDataAnalyzer:
     def _extract_insights(self):
         """استخلاص رؤى من بيانات المبيعات"""
         insights = []
-        lang = st.session_state.get('language', 'ar')
+        lang = TranslationSystem.t('language')
         
+        # 1. أفضل منطقة مبيعات
         if 'region' in self.mapping and 'total_amount' in self.mapping:
             region_col = self.mapping['region']
             amount_col = self.mapping['total_amount']
@@ -1012,6 +995,7 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
+        # 2. أفضل منتج
         if 'product_name' in self.mapping and 'quantity' in self.mapping:
             product_col = self.mapping['product_name']
             quantity_col = self.mapping['quantity']
@@ -1031,6 +1015,7 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
+        # 3. أفضل مندوب مبيعات
         if 'salesperson' in self.mapping and 'total_amount' in self.mapping:
             salesperson_col = self.mapping['salesperson']
             amount_col = self.mapping['total_amount']
@@ -1050,15 +1035,81 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
-        # إضافة insight عن هامش الربح
-        kpis = self._calculate_kpis()
-        if 'profit_margin' in kpis:
-            profit_margin = kpis['profit_margin']['value']
-            description = kpis['profit_margin']['description']
-            if lang == 'ar':
-                insights.append(f"💹 **هامش الربح**: {profit_margin:.2f}% ({description})")
-            else:
-                insights.append(f"💹 **Profit Margin**: {profit_margin:.2f}% ({description})")
+        # 4. تحليل هامش الربح الإجمالي
+        if 'total_amount' in self.mapping and 'cost' in self.mapping:
+            amount_col = self.mapping['total_amount']
+            cost_col = self.mapping['cost']
+            
+            if amount_col in self.df.columns and cost_col in self.df.columns:
+                try:
+                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+                    self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
+                    
+                    total_sales = self.df[amount_col].sum()
+                    
+                    # حساب تكلفة البضاعة المباعة
+                    if 'quantity' in self.mapping:
+                        quantity_col = self.mapping['quantity']
+                        if quantity_col in self.df.columns:
+                            self.df[quantity_col] = pd.to_numeric(self.df[quantity_col], errors='coerce')
+                            total_cogs = (self.df[cost_col] * self.df[quantity_col]).sum()
+                        else:
+                            total_cogs = self.df[cost_col].sum()
+                    else:
+                        total_cogs = self.df[cost_col].sum()
+                    
+                    gross_profit = total_sales - total_cogs
+                    gross_margin = (gross_profit / total_sales * 100) if total_sales > 0 else 0
+                    
+                    if lang == 'ar':
+                        if gross_margin > 40:
+                            insights.append(f"✅ **هامش ربح إجمالي ممتاز**: {gross_margin:.1f}%")
+                        elif gross_margin > 20:
+                            insights.append(f"📊 **هامش ربح إجمالي جيد**: {gross_margin:.1f}%")
+                        elif gross_margin > 0:
+                            insights.append(f"⚠️ **هامش ربح إجمالي منخفض**: {gross_margin:.1f}%")
+                        else:
+                            insights.append(f"❌ **هامش ربح إجمالي سلبي**: {gross_margin:.1f}%")
+                    else:
+                        if gross_margin > 40:
+                            insights.append(f"✅ **Excellent Gross Margin**: {gross_margin:.1f}%")
+                        elif gross_margin > 20:
+                            insights.append(f"📊 **Good Gross Margin**: {gross_margin:.1f}%")
+                        elif gross_margin > 0:
+                            insights.append(f"⚠️ **Low Gross Margin**: {gross_margin:.1f}%")
+                        else:
+                            insights.append(f"❌ **Negative Gross Margin**: {gross_margin:.1f}%")
+                except:
+                    pass
+        
+        # 5. تحليل الربحية
+        if 'profit' in self.mapping:
+            profit_col = self.mapping['profit']
+            if profit_col in self.df.columns:
+                try:
+                    self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
+                    profitable_transactions = (self.df[profit_col] > 0).sum()
+                    total_transactions = len(self.df)
+                    profitability_rate = (profitable_transactions / total_transactions) * 100
+                    
+                    if lang == 'ar':
+                        insights.append(f"📊 **معدل الربحية**: {profitability_rate:.1f}% من المعاملات مربحة")
+                    else:
+                        insights.append(f"📊 **Profitability Rate**: {profitability_rate:.1f}% of transactions are profitable")
+                except:
+                    pass
+        
+        # 6. تحليل التكرار
+        if 'customer_id' in self.mapping:
+            customer_col = self.mapping['customer_id']
+            if customer_col in self.df.columns:
+                repeat_customers = self.df[customer_col].duplicated().sum()
+                if repeat_customers > 0:
+                    repeat_rate = (repeat_customers / len(self.df)) * 100
+                    if lang == 'ar':
+                        insights.append(f"🔄 **معدل التكرار**: {repeat_rate:.1f}% من العملاء متكررون")
+                    else:
+                        insights.append(f"🔄 **Repeat Rate**: {repeat_rate:.1f}% of customers are repeat")
         
         return insights
     
@@ -1107,7 +1158,7 @@ class SalesDataAnalyzer:
     def _check_data_quality(self):
         """فحص جودة بيانات المبيعات"""
         warnings = []
-        lang = st.session_state.get('language', 'ar')
+        lang = TranslationSystem.t('language')
         
         missing_percentage = (self.df.isnull().sum() / len(self.df)) * 100
         high_missing = missing_percentage[missing_percentage > 20].index.tolist()
@@ -1139,46 +1190,13 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
-        # فحص بيانات هامش الربح
-        if 'profit' in self.mapping and 'total_amount' in self.mapping:
-            profit_col = self.mapping['profit']
-            amount_col = self.mapping['total_amount']
-            if profit_col in self.df.columns and amount_col in self.df.columns:
-                try:
-                    profit_data = pd.to_numeric(self.df[profit_col], errors='coerce')
-                    amount_data = pd.to_numeric(self.df[amount_col], errors='coerce')
-                    
-                    # فحص القيم غير المنطقية
-                    invalid_margins = ((profit_data > amount_data) & (amount_data > 0)).sum()
-                    if invalid_margins > 0:
-                        if lang == 'ar':
-                            warnings.append(f"⚠️ يوجد {invalid_margins} معاملة بربح أكبر من المبيعات")
-                        else:
-                            warnings.append(f"⚠️ Found {invalid_margins} transactions with profit greater than sales")
-                except:
-                    pass
-        
         return warnings
     
     def generate_professional_report(self, analysis_results):
         """إنشاء تقرير احترافي كامل للمبيعات"""
-        lang = st.session_state.get('language', 'ar')
+        lang = TranslationSystem.t('language')
         current_date = datetime.now().strftime('%Y-%m-%d %H:%M')
         report_id = f"SALE-{datetime.now().strftime('%Y%m%d')}-{np.random.randint(1000, 9999)}"
-        
-        # إضافة قسم تحليل الربحية بشكل موسع
-        kpis = analysis_results['kpis']
-        profit_analysis = ""
-        if 'profit_margin' in kpis:
-            profit_margin = kpis['profit_margin']['value']
-            description = kpis['profit_margin']['description']
-            profit_analysis = f"""
-📊 **تحليل الربحية:**
-• هامش الربح الإجمالي: {profit_margin:.2f}%
-• تقييم الربحية: {description}
-• إجمالي الأرباح: {kpis.get('total_profit', {}).get('formatted', 'غير متوفر')}
-• إجمالي المبيعات: {kpis.get('total_sales', {}).get('formatted', 'غير متوفر')}
-"""
         
         if lang == 'ar':
             report = f"""
@@ -1208,8 +1226,6 @@ class SalesDataAnalyzer:
 • عدد العملاء: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'غير متوفر')}
 • هامش الربح: {analysis_results['kpis'].get('profit_margin', {}).get('formatted', 'غير متوفر')}
 
-{profit_analysis}
-
 🎯 **النقاط البارزة:**
 """
             for insight in analysis_results['insights'][:3]:
@@ -1225,11 +1241,52 @@ class SalesDataAnalyzer:
 """
             for kpi_name, kpi_info in analysis_results['kpis'].items():
                 if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 'profit_margin', 
-                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate']:
-                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}"
-                    if kpi_name == 'profit_margin' and 'description' in kpi_info:
-                        report += f" ({kpi_info['description']})"
-                    report += "\n"
+                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate',
+                               'gross_profit', 'gross_margin']:
+                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
+            
+            report += f"""
+{'='*100}
+تحليل هامش الربح الإجمالي
+{'='*100}
+
+📊 **معادلة حساب هامش الربح الإجمالي:**
+• {TranslationSystem.t('gross_margin_formula')}
+
+📈 **نتائج التحليل:"""
+            
+            if 'gross_margin' in analysis_results['kpis']:
+                gross_margin = analysis_results['kpis']['gross_margin']
+                report += f"""
+• {gross_margin['label']}: {gross_margin['formatted']}
+"""
+            
+            if 'gross_profit' in analysis_results['kpis']:
+                gross_profit = analysis_results['kpis']['gross_profit']
+                report += f"""• {gross_profit['label']}: {gross_profit['formatted']}
+"""
+            
+            report += f"""
+💡 **تفسير النتائج:"""
+            
+            if 'gross_margin' in analysis_results['kpis']:
+                margin_value = analysis_results['kpis']['gross_margin']['value']
+                if margin_value > 40:
+                    report += f"""
+• ✅ **ممتاز**: هامش ربح إجمالي فوق 40% يشير إلى كفاءة إنتاجية عالية وتكاليف منخفضة
+"""
+                elif margin_value > 20:
+                    report += f"""
+• 📊 **جيد**: هامش ربح إجمالي بين 20-40% يعتبر صحيًا لمعظم الشركات
+"""
+                elif margin_value > 0:
+                    report += f"""
+• ⚠️ **منخفض**: هامش ربح إجمالي أقل من 20% يحتاج لمراجعة التكاليف أو الأسعار
+"""
+                else:
+                    report += f"""
+• ❌ **حرج**: هامش ربح إجمالي سلبي يعني أن التكاليف أعلى من المبيعات
+"""
             
             report += f"""
 {'='*100}
@@ -1307,28 +1364,23 @@ class SalesDataAnalyzer:
 
 🚀 **توصيات قابلة للتنفيذ:**
 
-1. **تحسين هامش الربح**
-   • تحليل أسباب انخفاض هامش الربح إن وجد
-   • تحسين استراتيجيات التسعير
-   • تقليل التكاليف التشغيلية
-
-2. **التركيز على المناطق عالية الأداء**
+1. **التركيز على المناطق عالية الأداء**
    • زيادة الاستثمار في التسويق بالمناطق الأعلى ربحية
    • تطوير استراتيجيات مخصصة لكل منطقة
 
-3. **تحسين محفظة المنتجات**
+2. **تحسين محفظة المنتجات**
    • التركيز على المنتجات عالية الربحية
    • تحليل أسباب نجاح المنتجات الرائدة
 
-4. **تحسين أداء فرق المبيعات**
+3. **تحسين أداء فرق المبيعات**
    • دراسة استراتيجيات المندوبين الأوائل
    • تطوير برامج تدريب مبنية على أفضل الممارسات
 
-5. **تحسين جودة البيانات**
+4. **تحسين جودة البيانات**
    • معالجة القيم المفقودة
    • توحيد تنسيقات البيانات
 
-6. **تحسين استراتيجيات التسعير**
+5. **تحسين استراتيجيات التسعير**
    • تحليل تأثير الخصومات على الربحية
    • تطوير استراتيجيات تسعير ديناميكية
 
@@ -1350,7 +1402,6 @@ class SalesDataAnalyzer:
 • تم إعداد هذا التقرير باستخدام تقنيات تحليلية متقدمة
 • جميع البيانات معتمدة من مصادر موثوقة
 • التوصيات قابلة للقياس والتنفيذ
-• يركز التقرير على تحسين هامش الربح والأداء المالي
 
 📞 **للاستفسارات:**
 {TranslationSystem.t('report_author')}
@@ -1389,8 +1440,6 @@ This report provides actionable strategic insights based on factual data.
 • Customer Count: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'N/A')}
 • Profit Margin: {analysis_results['kpis'].get('profit_margin', {}).get('formatted', 'N/A')}
 
-{profit_analysis}
-
 🎯 **Key Highlights:**
 """
             for insight in analysis_results['insights'][:3]:
@@ -1406,11 +1455,52 @@ Core Performance Metrics:
 """
             for kpi_name, kpi_info in analysis_results['kpis'].items():
                 if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 'profit_margin', 
-                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate']:
-                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}"
-                    if kpi_name == 'profit_margin' and 'description' in kpi_info:
-                        report += f" ({kpi_info['description']})"
-                    report += "\n"
+                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate',
+                               'gross_profit', 'gross_margin']:
+                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
+            
+            report += f"""
+{'='*100}
+GROSS PROFIT MARGIN ANALYSIS
+{'='*100}
+
+📊 **Gross Profit Margin Formula:**
+• {TranslationSystem.t('gross_margin_formula')}
+
+📈 **Analysis Results:"""
+            
+            if 'gross_margin' in analysis_results['kpis']:
+                gross_margin = analysis_results['kpis']['gross_margin']
+                report += f"""
+• {gross_margin['label']}: {gross_margin['formatted']}
+"""
+            
+            if 'gross_profit' in analysis_results['kpis']:
+                gross_profit = analysis_results['kpis']['gross_profit']
+                report += f"""• {gross_profit['label']}: {gross_profit['formatted']}
+"""
+            
+            report += f"""
+💡 **Interpretation:"""
+            
+            if 'gross_margin' in analysis_results['kpis']:
+                margin_value = analysis_results['kpis']['gross_margin']['value']
+                if margin_value > 40:
+                    report += f"""
+• ✅ **Excellent**: Gross margin above 40% indicates high production efficiency and low costs
+"""
+                elif margin_value > 20:
+                    report += f"""
+• 📊 **Good**: Gross margin between 20-40% is healthy for most companies
+"""
+                elif margin_value > 0:
+                    report += f"""
+• ⚠️ **Low**: Gross margin below 20% needs review of costs or pricing
+"""
+                else:
+                    report += f"""
+• ❌ **Critical**: Negative gross margin means costs exceed sales
+"""
             
             report += f"""
 {'='*100}
@@ -1488,28 +1578,23 @@ STRATEGIC RECOMMENDATIONS
 
 🚀 **Actionable Recommendations:**
 
-1. **Improve Profit Margin**
-   • Analyze reasons for low profit margin if any
-   • Optimize pricing strategies
-   • Reduce operational costs
-
-2. **Focus on High-Performing Regions**
+1. **Focus on High-Performing Regions**
    • Increase marketing investment in top-performing regions
    • Develop region-specific strategies
 
-3. **Optimize Product Portfolio**
+2. **Optimize Product Portfolio**
    • Focus on high-profit margin products
    • Analyze success factors of top products
 
-4. **Enhance Sales Team Performance**
+3. **Enhance Sales Team Performance**
    • Study top salesperson strategies
    • Develop training programs based on best practices
 
-5. **Improve Data Quality**
+4. **Improve Data Quality**
    • Address missing values
    • Standardize data formats
 
-6. **Optimize Pricing Strategies**
+5. **Optimize Pricing Strategies**
    • Analyze discount impact on profitability
    • Develop dynamic pricing strategies
 
@@ -1531,7 +1616,6 @@ FINAL NOTES
 • This report was prepared using advanced analytical techniques
 • All data is verified from reliable sources
 • Recommendations are measurable and actionable
-• Report focuses on profit margin improvement and financial performance
 
 📞 **For Inquiries:**
 {TranslationSystem.t('report_author')}
@@ -2103,28 +2187,6 @@ def load_css():
         margin: 10px 0;
         border-radius: 8px;
     }}
-    
-    .profit-margin-card {{
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-        color: white;
-        padding: 25px;
-        border-radius: 12px;
-        margin: 10px 0;
-        text-align: center;
-        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-    }}
-    
-    .profit-margin-low {{
-        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-    }}
-    
-    .profit-margin-medium {{
-        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-    }}
-    
-    .profit-margin-high {{
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-    }}
     </style>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -2439,79 +2501,19 @@ if st.session_state.get('analysis_ready', False):
                             'neutral': '#6B7280'
                         }.get(kpi_info.get('trend', 'neutral'), '#6B7280')
                         
-                        # تصميم خاص لبطاقة هامش الربح
-                        if kpi_key == 'profit_margin':
-                            margin_class = "profit-margin-card"
-                            if kpi_info['value'] >= 20:
-                                margin_class += " profit-margin-high"
-                            elif kpi_info['value'] >= 10:
-                                margin_class += " profit-margin-medium"
-                            else:
-                                margin_class += " profit-margin-low"
-                            
-                            st.markdown(f"""
-                            <div class="{margin_class}">
-                                <div style="font-size: 2.8rem; margin-bottom: 15px;">
-                                    {kpi_info.get('icon', '💹')}
-                                </div>
-                                <div style="font-size: 2.2rem; font-weight: bold; margin-bottom: 10px;">
-                                    {kpi_info['formatted']}
-                                </div>
-                                <div style="font-size: 1.1rem; margin-bottom: 5px;">
-                                    {kpi_info['label']}
-                                </div>
-                                <div style="font-size: 0.9rem; opacity: 0.9;">
-                                    {kpi_info.get('description', '')}
-                                </div>
+                        st.markdown(f"""
+                        <div class="kpi-card">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px; color: {trend_color};">
+                                {kpi_info.get('icon', '📊')}
                             </div>
-                            """, unsafe_allow_html=True)
-                        else:
-                            st.markdown(f"""
-                            <div class="kpi-card">
-                                <div style="font-size: 2.5rem; margin-bottom: 10px; color: {trend_color};">
-                                    {kpi_info.get('icon', '📊')}
-                                </div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: #4F46E5;">
-                                    {kpi_info['formatted']}
-                                </div>
-                                <div style="color: #6B7280; font-size: 0.9rem;">
-                                    {kpi_info['label']}
-                                </div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #4F46E5;">
+                                {kpi_info['formatted']}
                             </div>
-                            """, unsafe_allow_html=True)
-    
-    # عرض تحليل الربحية بشكل مفصل
-    if 'profit_margin' in kpis:
-        profit_margin = kpis['profit_margin']['value']
-        description = kpis['profit_margin']['description']
-        
-        st.markdown(f"### 💹 تحليل مفصل للربحية")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric(
-                "هامش الربح",
-                f"{profit_margin:.2f}%",
-                delta=f"{description}"
-            )
-        
-        if 'total_profit' in kpis and 'total_sales' in kpis:
-            total_profit = kpis['total_profit']['value']
-            total_sales = kpis['total_sales']['value']
-            
-            with col2:
-                st.metric(
-                    "إجمالي الربح",
-                    kpis['total_profit']['formatted']
-                )
-            
-            with col3:
-                if total_sales > 0:
-                    profit_per_sales = (total_profit / total_sales) * 100
-                    st.metric(
-                        "الربح لكل مبيعات",
-                        f"{profit_per_sales:.2f}%"
-                    )
+                            <div style="color: #6B7280; font-size: 0.9rem;">
+                                {kpi_info['label']}
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
     
     # الرسوم البيانية الذكية
     st.markdown(f"### 📊 {TranslationSystem.t('charts_title')}")
@@ -2553,15 +2555,12 @@ if st.session_state.get('analysis_ready', False):
         # صندوق عرض التقرير الاحترافي
         st.markdown(f'<div class="report-box">{st.session_state.text_report}</div>', unsafe_allow_html=True)
         
-        # زر النسخ
+        # زر النسخ فقط
         if st.button(TranslationSystem.t('copy_report'), use_container_width=True, icon="📋"):
             try:
                 import pyperclip
                 pyperclip.copy(st.session_state.text_report)
                 st.success(TranslationSystem.t('report_copied'))
-            except ImportError:
-                st.code(st.session_state.text_report, language='text')
-                st.warning("⚠️ يرجى نسخ النص أعلاه يدوياً" if st.session_state.language == 'ar' else "⚠️ Please copy the text above manually")
             except:
                 # Fallback في حالة عدم وجود pyperclip
                 st.code(st.session_state.text_report, language='text')
@@ -2632,9 +2631,8 @@ if not st.session_state.files_uploaded:
     
     💡 **نصائح**:
     - يمكنك رفع ملفات متعددة ودمجها
-    - تحقق من تعيين الأعمدة قبل التحليل
+    - تأكد من تعيين عمود **التكلفة** لحساب هامش الربح الإجمالي
     - استخدم زر حفظ الإعدادات لحفظ التكوين
-    - **هام**: تأكد من تعيين أعمدة الربح والمبيعات لحساب هامش الربح بدقة
     """)
 
 # ==================== 12. تذييل الصفحة ====================
@@ -2644,7 +2642,6 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown("""
     <div style="text-align: center; color: #6B7280; font-size: 0.9rem;">
-    <p>📊 نظام تحليل المبيعات الذكي | الإصدار 3.0 | يدعم العربية والإنجليزية</p>
-    <p>💹 تم تحسين حساب هامش الربح للإصدار 3.1</p>
+    <p>📊 نظام تحليل المبيعات الذكي | الإصدار 3.0 | يدعم العربية والإنجليزية | مع هامش الربح الإجمالي</p>
     </div>
     """, unsafe_allow_html=True)
