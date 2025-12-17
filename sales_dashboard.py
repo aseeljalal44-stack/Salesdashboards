@@ -674,8 +674,14 @@ class SalesDataAnalyzer:
                 pass
     
     # حساب هامش الربح
-    if total_sales > 0:
-        profit_margin = (total_profit / total_sales) * 100
+    if 'total_sales' in kpis:
+        total_sales = kpis['total_sales']['value']
+        if total_sales > 0:
+            profit_margin = (total_profit / total_sales) * 100
+        else:
+            profit_margin = 0
+    else:
+        profit_margin = 0
     
     # إضافة مؤشر الربح إذا كان له قيمة
     if total_profit != 0:
@@ -2447,4 +2453,4 @@ with col2:
     <div style="text-align: center; color: #6B7280; font-size: 0.9rem;">
     <p>📊 نظام تحليل المبيعات الذكي | الإصدار 3.0 | يدعم العربية والإنجليزية</p>
     </div>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)a
