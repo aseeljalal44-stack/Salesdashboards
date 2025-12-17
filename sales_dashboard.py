@@ -592,76 +592,173 @@ class SalesDataAnalyzer:
         analysis_results['customer_analysis'] = self._analyze_customer_segments()
         analysis_results['product_analysis'] = self._analyze_product_portfolio()
         
-        return analysis_resultsdef _calculate_kpis(self):
+        return analysis_results
+    
+   def _calculate_kpis(self):
+    """حساب مؤشرات أداء المبيعات"""
     kpis = {}
-
+    
     # إجمالي عدد المعاملات
     total_transactions = len(self.df)
     kpis['total_transactions'] = {
         'value': total_transactions,
         'formatted': f"{total_transactions:,}",
-        'label': TranslationSystem.t('total_transactions'),
-        'icon': '🛒'
+        'label': TranslationSystem.t('kpi_transactions'),
+        'icon': '🛒',
+        'trend': 'neutral'
     }
-
+    
     # إجمالي المبيعات
-    total_sales = 0
     if 'total_amount' in self.mapping:
         amount_col = self.mapping['total_amount']
         if amount_col in self.df.columns:
             try:
                 self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
                 total_sales = self.df[amount_col].sum()
-                avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
-
                 kpis['total_sales'] = {
                     'value': total_sales,
                     'formatted': f"${total_sales:,.0f}",
-                    'label': TranslationSystem.t('total_sales'),
-                    'icon': '💰'
+                    'label': TranslationSystem.t('kpi_sales'),
+                    'icon': '💰',
+                    'trend': 'positive' if total_sales > 0 else 'negative'
                 }
-
+                
+                avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
                 kpis['avg_transaction'] = {
                     'value': avg_transaction,
                     'formatted': f"${avg_transaction:,.0f}",
-                    'label': TranslationSystem.t('avg_transaction'),
-                    'icon': '📊'
+                    'label': TranslationSystem.t('kpi_avg_transaction'),
+                    'icon': '📊',
+                    'trend': 'positive' if avg_transaction > 0 else 'negative'
                 }
             except:
                 pass
-
-    # إجمالي الربح + هامش الربح (FIXED)
-    if 'profit' in self.mapping and 'total_amount' in self.mapping:
-        profit_col = self.mapping['profit']
-        amount_col = self.mapping['total_amount']
-
-        if profit_col in self.df.columns and amount_col in self.df.columns:
-            self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-            self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
-
-            total_profit = self.df[profit_col].sum()
-            total_sales = self.df[amount_col].sum()
-
-            profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
-
-            kpis['total_profit'] = {
-                'value': total_profit,
-                'formatted': f"${total_profit:,.0f}",
-                'label': TranslationSystem.t('kpi_profit'),
-                'icon': '📈',
-                'trend': 'positive' if total_profit > 0 else 'negative'
-            }
-
-            kpis['profit_margin'] = {
-                'value': profit_margin,
-                'formatted': f"{profit_margin:.1f}%",
-                'label': TranslationSystem.t('profit_margin'),
-                'icon': '📊',
-                'trend': 'positive' if profit_margin > 15 else 'neutral'
-            }
-
-    return kpis
     
+    # إجمالي الربح وهامش الربح
+    total_profit = 0
+    profit_margin = 0
+    
+    # الحالة 1: إذا كان هناك عمود profit مباشرة
+    if 'profit' in self.mapping:
+        profit_col = self.mapping['profit']
+        if profit_col in self.df.columns:
+            try:
+                self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
+                total_profit = self.df[profit_col].sum()
+            except:
+                pass
+    
+    # الحالة 2: إذا لم يكن هناك profit ولكن هناك total_amount و cost
+    elif 'cost' in self.mapping and 'total_amount' in self.mapping:
+        cost_col = self.mapping['cost']
+        amount_col = self.mapping['total_amount']
+        if cost_col in self.df.columns and amount_col in self.df.columns:
+            try:
+                self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
+                self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+                total_cost = self.df[cost_col].sum()
+                total_sales = self.df[amount_col].sum()
+                total_profit = total_sales - total_cost
+            except:
+                pass
+    
+    # الحالة 3: إذا لم يكن هناك أي منهما، احسب نسبة ربح افتراضية (20%)
+    elif 'total_amount' in self.mapping:
+        amount_col = self.mapping['total_amount']
+        if amount_col in self.df.columns:
+            try:
+                self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+                total_sales = self.df[amount_col].sum()
+                total_profit = total_sales * 0.20  # افتراض هامش ربح 20%
+            except:
+                pass
+    
+    # حساب هامش الربح
+    if total_sales > 0:
+        profit_margin = (total_profit / total_sales) * 100
+    
+    # إضافة مؤشر الربح إذا كان له قيمة
+    if total_profit != 0:
+        kpis['total_profit'] = {
+            'value': total_profit,
+            'formatted': f"${total_profit:,.0f}",
+            'label': TranslationSystem.t('kpi_profit'),
+            'icon': '📈',
+            'trend': 'positive' if total_profit > 0 else 'negative'
+        }
+        
+        kpis['profit_margin'] = {
+            'value': profit_margin,
+            'formatted': f"{profit_margin:.1f}%",
+            'label': TranslationSystem.t('profit_margin'),
+            'icon': '📊',
+            'trend': 'positive' if profit_margin > 15 else 'neutral'
+        }
+    
+    # عدد العملاء الفريدين
+    if 'customer_id' in self.mapping:
+        customer_col = self.mapping['customer_id']
+        if customer_col in self.df.columns:
+            unique_customers = self.df[customer_col].nunique()
+            kpis['unique_customers'] = {
+                'value': unique_customers,
+                'formatted': f"{unique_customers:,}",
+                'label': TranslationSystem.t('kpi_customers'),
+                'icon': '👥',
+                'trend': 'positive' if unique_customers > 0 else 'neutral'
+            }
+    
+    # عدد المنتجات الفريدة
+    if 'product_id' in self.mapping:
+        product_col = self.mapping['product_id']
+        if product_col in self.df.columns:
+            unique_products = self.df[product_col].nunique()
+            kpis['unique_products'] = {
+                'value': unique_products,
+                'formatted': f"{unique_products:,}",
+                'label': TranslationSystem.t('kpi_products'),
+                'icon': '📦',
+                'trend': 'positive' if unique_products > 0 else 'neutral'
+            }
+    
+    # متوسط الكمية لكل معاملة
+    if 'quantity' in self.mapping:
+        quantity_col = self.mapping['quantity']
+        if quantity_col in self.df.columns:
+            try:
+                self.df[quantity_col] = pd.to_numeric(self.df[quantity_col], errors='coerce')
+                avg_quantity = self.df[quantity_col].mean()
+                kpis['avg_quantity'] = {
+                    'value': avg_quantity,
+                    'formatted': f"{avg_quantity:.1f}",
+                    'label': TranslationSystem.t('kpi_avg_quantity'),
+                    'icon': '⚖️',
+                    'trend': 'positive' if avg_quantity > 1 else 'neutral'
+                }
+            except:
+                pass
+    
+    # معدل الخصم
+    if 'discount' in self.mapping and 'total_amount' in self.mapping:
+        discount_col = self.mapping['discount']
+        amount_col = self.mapping['total_amount']
+        if discount_col in self.df.columns and amount_col in self.df.columns:
+            try:
+                self.df[discount_col] = pd.to_numeric(self.df[discount_col], errors='coerce')
+                total_discount = self.df[discount_col].sum()
+                discount_rate = (total_discount / total_sales * 100) if total_sales > 0 else 0
+                
+                kpis['discount_rate'] = {
+                    'value': discount_rate,
+                    'formatted': f"{discount_rate:.1f}%",
+                    'label': TranslationSystem.t('kpi_discount_rate'),
+                    'icon': '🎯',
+                    'trend': 'positive' if discount_rate < 10 else 'neutral'
+                }
+            except:
+                pass
+    
+    return kpis
     def _calculate_growth_metrics(self):
         """حساب مقاييس النمو"""
         growth_metrics = {}
