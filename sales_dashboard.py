@@ -631,17 +631,18 @@ class SalesDataAnalyzer:
             except:
                 pass
 
-    # إجمالي الربح + هامش الربح (FIXED)
-    if 'profit' in self.mapping and 'total_amount' in self.mapping:
-        profit_col = self.mapping['profit']
-        amount_col = self.mapping['total_amount']
+    # ===================== إجمالي الربح =====================
+if 'profit' in self.mapping and 'total_amount' in self.mapping:
+    profit_col = self.mapping['profit']
+    sales_col = self.mapping['total_amount']
 
-        if profit_col in self.df.columns and amount_col in self.df.columns:
+    if profit_col in self.df.columns and sales_col in self.df.columns:
+        try:
             self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-            self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+            self.df[sales_col] = pd.to_numeric(self.df[sales_col], errors='coerce')
 
             total_profit = self.df[profit_col].sum()
-            total_sales = self.df[amount_col].sum()
+            total_sales = self.df[sales_col].sum()
 
             profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
 
@@ -661,6 +662,8 @@ class SalesDataAnalyzer:
                 'trend': 'positive' if profit_margin > 15 else 'neutral'
             }
 
+        except Exception as e:
+            pass
     return kpis
     
     def _calculate_growth_metrics(self):
