@@ -59,12 +59,6 @@ class SalesSmartVisualizer:
             if payment_chart:
                 charts.append(payment_chart)
         
-        # 8. تحليل الربحية
-        if 'profit' in self.mapping:
-            profit_chart = self._create_profit_chart()
-            if profit_chart:
-                charts.append(profit_chart)
-        
         return charts
     
     def _create_sales_trend_chart(self):
@@ -89,7 +83,7 @@ class SalesSmartVisualizer:
             if len(df_clean) == 0:
                 return None
             
-            # تجميع البيانات حسب التاريخ (يومي/شهري)
+            # تجميع البيانات حسب التاريخ (شهري)
             df_clean['date_trunc'] = df_clean[date_col].dt.to_period('M').dt.to_timestamp()
             sales_trend = df_clean.groupby('date_trunc')[amount_col].sum().reset_index()
             
@@ -308,20 +302,6 @@ class SalesSmartVisualizer:
                 labels={price_col: 'السعر', quantity_col: 'الكمية المباعة'}
             )
             
-            # حساب معامل الارتباط
-            correlation = df_clean[[price_col, quantity_col]].corr().iloc[0,1]
-            
-            # إضافة نص معامل الارتباط
-            fig.add_annotation(
-                x=0.05, y=0.95,
-                xref="paper", yref="paper",
-                text=f"معامل الارتباط: {correlation:.2f}",
-                showarrow=False,
-                bgcolor="white",
-                bordercolor="black",
-                borderwidth=1
-            )
-            
             return {
                 'title': 'العلاقة بين السعر والكمية',
                 'figure': fig,
@@ -358,53 +338,3 @@ class SalesSmartVisualizer:
             'figure': fig,
             'available': True
         }
-    
-    def _create_profit_chart(self):
-        """إنشاء رسم تحليل الربحية"""
-        profit_col = self.mapping['profit']
-        
-        if profit_col not in self.df.columns:
-            return None
-        
-        try:
-            # تحويل الأرباح إلى أرقام
-            profit_data = pd.to_numeric(self.df[profit_col], errors='coerce').dropna()
-            
-            if len(profit_data) == 0:
-                return None
-            
-            # إنشاء histogram
-            fig = px.histogram(
-                profit_data,
-                nbins=30,
-                title='توزيع الأرباح',
-                labels={'value': 'الربح', 'count': 'عدد المعاملات'}
-            )
-            
-            # إضافة خط للمتوسط
-            avg_profit = profit_data.mean()
-            fig.add_vline(
-                x=avg_profit,
-                line_dash="dash",
-                line_color="green",
-                annotation_text=f"المتوسط: ${avg_profit:,.0f}",
-                annotation_position="top right"
-            )
-            
-            # إضافة خط للصفر
-            fig.add_vline(
-                x=0,
-                line_dash="dot",
-                line_color="red",
-                annotation_text="نقطة التعادل",
-                annotation_position="bottom right"
-            )
-            
-            return {
-                'title': 'توزيع الأرباح',
-                'figure': fig,
-                'available': True
-            }
-            
-        except:
-            return None
