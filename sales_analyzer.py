@@ -1,5 +1,5 @@
 """
-وحدة التحليل الذكي لبيانات المبيعات
+وحدة التحليل الذكي لبيانات المبيعات - نسخة محسّنة مع حساب دقيق لهامش الربح
 """
 
 import pandas as pd
@@ -10,7 +10,6 @@ class SalesDataAnalyzer:
     def __init__(self, dataframe, column_mapping):
         self.df = dataframe.copy()
         self.mapping = column_mapping
-        self.reverse_mapping = {v: k for k, v in column_mapping.items() if v != "❌ لا يوجد"}
     
     def analyze_all(self):
         """إجراء جميع التحليلات المتاحة للمبيعات"""
@@ -22,8 +21,8 @@ class SalesDataAnalyzer:
             'warnings': []
         }
         
-        # 1. تحليل KPIs
-        analysis_results['kpis'] = self._calculate_kpis()
+        # 1. تحليل KPIs مع حساب محسن لهامش الربح
+        analysis_results['kpis'] = self._calculate_kpis_improved()
         
         # 2. توزيع البيانات
         analysis_results['distributions'] = self._analyze_distributions()
@@ -39,8 +38,8 @@ class SalesDataAnalyzer:
         
         return analysis_results
     
-    def _calculate_kpis(self):
-        """حساب مؤشرات أداء المبيعات"""
+    def _calculate_kpis_improved(self):
+        """حساب مؤشرات أداء المبيعات - نسخة محسنة مع حساب دقيق لهامش الربح"""
         kpis = {}
         
         # إجمالي عدد المعاملات
@@ -52,6 +51,7 @@ class SalesDataAnalyzer:
         }
         
         # إجمالي المبيعات
+        total_sales = 0
         if 'total_amount' in self.mapping:
             amount_col = self.mapping['total_amount']
             if amount_col in self.df.columns:
@@ -59,58 +59,78 @@ class SalesDataAnalyzer:
                     self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
                     total_sales = self.df[amount_col].sum()
                     kpis['total_sales'] = {
-                        'value': f"${total_sales:,.0f}",
+                        'value': f"${total_sales:,.0f}" if total_sales >= 1000 else f"${total_sales:,.2f}",
                         'label': 'إجمالي المبيعات',
                         'icon': '💰'
                     }
                     
                     # متوسط قيمة المعاملة
-                    avg_transaction = total_sales / total_transactions
+                    avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
                     kpis['avg_transaction'] = {
-                        'value': f"${avg_transaction:,.0f}",
+                        'value': f"${avg_transaction:,.2f}",
                         'label': 'متوسط قيمة المعاملة',
                         'icon': '📊'
                     }
                 except:
-                    pass
+                    kpis['total_sales'] = {
+                        'value': "$0",
+                        'label': 'إجمالي المبيعات',
+                        'icon': '💰'
+                    }
         
-        # إجمالي الربح
+        # إجمالي الربح وحساب هامش الربح بدقة
+        total_profit = 0
+        profit_margin = 0
+        margin_description = "غير متوفر"
+        
         if 'profit' in self.mapping:
             profit_col = self.mapping['profit']
             if profit_col in self.df.columns:
                 try:
                     self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
                     total_profit = self.df[profit_col].sum()
+                    
                     kpis['total_profit'] = {
-                        'value': f"${total_profit:,.0f}",
+                        'value': f"${total_profit:,.0f}" if total_profit >= 1000 else f"${total_profit:,.2f}",
                         'label': 'إجمالي الربح',
                         'icon': '📈'
                     }
-                except:
-                    pass
                     
- # هامش الربح (Profit Margin) — الحساب الصحيح
-if 'total_amount' in self.mapping and 'profit' in self.mapping:
-    amount_col = self.mapping['total_amount']
-    profit_col = self.mapping['profit']
-
-    if amount_col in self.df.columns and profit_col in self.df.columns:
-        try:
-            total_sales = pd.to_numeric(self.df[amount_col], errors='coerce').sum()
-            total_profit = pd.to_numeric(self.df[profit_col], errors='coerce').sum()
-
-            if total_sales > 0:
-                profit_margin = (total_profit / total_sales) * 100
-            else:
-                profit_margin = 0
-
-            kpis['profit_margin'] = {
-                'value': f"{profit_margin:.2f}%",
-                'label': 'هامش الربح',
-                'icon': '⚖️'
-            }
-        except:
-            pass       
+                    # حساب هامش الربح بشكل دقيق
+                    if total_sales != 0:
+                        profit_margin = (total_profit / total_sales) * 100
+                        
+                        # تقييم منطقية هامش الربح
+                        if profit_margin > 100 or profit_margin < -100:
+                            # إذا كان غير منطقي، نحاول حساب بديل باستخدام التكلفة
+                            if 'cost' in self.mapping:
+                                cost_col = self.mapping['cost']
+                                if cost_col in self.df.columns:
+                                    try:
+                                        self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
+                                        total_cost = self.df[cost_col].sum()
+                                        if total_cost > 0:
+                                            profit_margin = ((total_sales - total_cost) / total_sales) * 100
+                                    except:
+                                        pass
+                        
+                        margin_description = self._get_margin_description(profit_margin)
+                    
+                except:
+                    kpis['total_profit'] = {
+                        'value': "$0",
+                        'label': 'إجمالي الربح',
+                        'icon': '📈'
+                    }
+        
+        kpis['profit_margin'] = {
+            'value': f"{profit_margin:.2f}%",
+            'label': 'هامش الربح',
+            'icon': '💹',
+            'description': margin_description,
+            'raw_value': profit_margin
+        }
+        
         # عدد العملاء الفريدين
         if 'customer_id' in self.mapping:
             customer_col = self.mapping['customer_id']
@@ -141,7 +161,7 @@ if 'total_amount' in self.mapping and 'profit' in self.mapping:
                     self.df[quantity_col] = pd.to_numeric(self.df[quantity_col], errors='coerce')
                     avg_quantity = self.df[quantity_col].mean()
                     kpis['avg_quantity'] = {
-                        'value': f"{avg_quantity:.1f}",
+                        'value': f"{avg_quantity:.2f}",
                         'label': 'متوسط الكمية',
                         'icon': '⚖️'
                     }
@@ -163,7 +183,7 @@ if 'total_amount' in self.mapping and 'profit' in self.mapping:
                     if total_sales_before_discount > 0:
                         discount_rate = (total_discount / total_sales_before_discount) * 100
                         kpis['discount_rate'] = {
-                            'value': f"{discount_rate:.1f}%",
+                            'value': f"{discount_rate:.2f}%",
                             'label': 'معدل الخصم',
                             'icon': '🎯'
                         }
@@ -171,6 +191,29 @@ if 'total_amount' in self.mapping and 'profit' in self.mapping:
                     pass
         
         return kpis
+    
+    def _get_margin_description(self, margin):
+        """توليد وصف لهامش الربح"""
+        if margin > 50:
+            return "هامش ربح ممتاز"
+        elif margin > 30:
+            return "هامش ربح عالي"
+        elif margin > 20:
+            return "هامش ربح جيد جداً"
+        elif margin > 15:
+            return "هامش ربح جيد"
+        elif margin > 10:
+            return "هامش ربح مقبول"
+        elif margin > 5:
+            return "هامش ربح منخفض"
+        elif margin > 0:
+            return "هامش ربح ضعيف"
+        elif margin == 0:
+            return "لا يوجد ربح"
+        elif margin > -10:
+            return "خسارة طفيفة"
+        else:
+            return "خسارة كبيرة"
     
     def _analyze_distributions(self):
         """تحليل توزيع بيانات المبيعات"""
@@ -297,18 +340,11 @@ if 'total_amount' in self.mapping and 'profit' in self.mapping:
                     pass
         
         # 4. تحليل الربحية
-        if 'profit' in self.mapping:
-            profit_col = self.mapping['profit']
-            if profit_col in self.df.columns:
-                try:
-                    self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-                    profitable_transactions = (self.df[profit_col] > 0).sum()
-                    total_transactions = len(self.df)
-                    profitability_rate = (profitable_transactions / total_transactions) * 100
-                    
-                    insights.append(f"📊 **معدل الربحية**: {profitability_rate:.1f}% من المعاملات مربحة")
-                except:
-                    pass
+        kpis = self._calculate_kpis_improved()
+        if 'profit_margin' in kpis:
+            profit_margin = kpis['profit_margin']['raw_value']
+            description = kpis['profit_margin']['description']
+            insights.append(f"💹 **هامش الربح**: {profit_margin:.2f}% ({description})")
         
         # 5. تحليل التكرار
         if 'customer_id' in self.mapping:
@@ -374,6 +410,22 @@ if 'total_amount' in self.mapping and 'profit' in self.mapping:
                 except:
                     pass
         
+        # 6. فحص بيانات الربحية
+        if 'profit' in self.mapping and 'total_amount' in self.mapping:
+            profit_col = self.mapping['profit']
+            amount_col = self.mapping['total_amount']
+            if profit_col in self.df.columns and amount_col in self.df.columns:
+                try:
+                    profit_data = pd.to_numeric(self.df[profit_col], errors='coerce')
+                    amount_data = pd.to_numeric(self.df[amount_col], errors='coerce')
+                    
+                    # فحص القيم غير المنطقية
+                    invalid_margins = ((profit_data > amount_data) & (amount_data > 0)).sum()
+                    if invalid_margins > 0:
+                        warnings.append(f"⚠️ يوجد {invalid_margins} معاملة بربح أكبر من المبيعات")
+                except:
+                    pass
+        
         return warnings
     
     def get_modified_dataframe(self):
@@ -396,7 +448,7 @@ if 'total_amount' in self.mapping and 'profit' in self.mapping:
         report_lines.append("")
         
         # KPIs
-        kpis = self._calculate_kpis()
+        kpis = self._calculate_kpis_improved()
         report_lines.append("المؤشرات الرئيسية (KPIs):")
         for kpi_name, kpi_info in kpis.items():
             report_lines.append(f"- {kpi_info['label']}: {kpi_info['value']}")
@@ -420,10 +472,14 @@ if 'total_amount' in self.mapping and 'profit' in self.mapping:
         
         # Recommendations
         report_lines.append("التوصيات:")
-        report_lines.append("1. التركيز على المناطق ذات الأداء العالي")
-        report_lines.append("2. تحليل أسباب المبيعات المنخفضة في المناطق الضعيفة")
-        report_lines.append("3. تحسين المنتجات الأكثر مبيعاً")
-        report_lines.append("4. تحفيز مندوبي المبيعات بناءً على الأداء")
-        report_lines.append("5. تحليل تأثير الخصومات على المبيعات")
+        report_lines.append("1. التركيز على تحسين هامش الربح من خلال:")
+        report_lines.append("   • تحليل أسباب انخفاض هامش الربح")
+        report_lines.append("   • تحسين استراتيجيات التسعير")
+        report_lines.append("   • تقليل التكاليف التشغيلية")
+        report_lines.append("2. التركيز على المناطق ذات الأداء العالي")
+        report_lines.append("3. تحليل أسباب المبيعات المنخفضة في المناطق الضعيفة")
+        report_lines.append("4. تحسين المنتجات الأكثر مبيعاً")
+        report_lines.append("5. تحفيز مندوبي المبيعات بناءً على الأداء")
+        report_lines.append("6. تحليل تأثير الخصومات على المبيعات والربحية")
         
         return "\n".join(report_lines)
