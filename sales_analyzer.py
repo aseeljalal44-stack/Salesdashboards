@@ -51,7 +51,8 @@ class SalesDataAnalyzer:
             'icon': '🛒'
         }
         
-        # إجمالي المبيعات
+        # إجمالي المبيعات (الإيرادات)
+        total_sales = 0
         if 'total_amount' in self.mapping:
             amount_col = self.mapping['total_amount']
             if amount_col in self.df.columns:
@@ -65,7 +66,7 @@ class SalesDataAnalyzer:
                     }
                     
                     # متوسط قيمة المعاملة
-                    avg_transaction = total_sales / total_transactions
+                    avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
                     kpis['avg_transaction'] = {
                         'value': f"${avg_transaction:,.0f}",
                         'label': 'متوسط قيمة المعاملة',
@@ -75,6 +76,7 @@ class SalesDataAnalyzer:
                     pass
         
         # إجمالي الربح
+        total_profit = 0
         if 'profit' in self.mapping:
             profit_col = self.mapping['profit']
             if profit_col in self.df.columns:
@@ -88,6 +90,26 @@ class SalesDataAnalyzer:
                     }
                 except:
                     pass
+        
+        # هامش الربح الكلي (الإصلاح الرئيسي هنا)
+        # NOTE: 
+        # Overall profit margin is calculated from totals,
+        # not average of row-level margins
+        if total_sales > 0 and total_profit != 0:
+            overall_margin = (total_profit / total_sales) * 100
+            kpis['profit_margin'] = {
+                'value': f"{overall_margin:.2f}%",
+                'label': 'هامش الربح الكلي',
+                'icon': '📊',
+                'note': 'محسوب من الإجماليات، ليس متوسط هوامش الصفوف'
+            }
+        else:
+            kpis['profit_margin'] = {
+                'value': "0%",
+                'label': 'هامش الربح الكلي',
+                'icon': '📊',
+                'note': 'لا توجد بيانات كافية للحساب'
+            }
         
         # عدد العملاء الفريدين
         if 'customer_id' in self.mapping:
@@ -274,17 +296,27 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
-        # 4. تحليل الربحية
-        if 'profit' in self.mapping:
+        # 4. تحليل الربحية (هامش الربح لكل منتج/فئة)
+        if 'profit' in self.mapping and 'total_amount' in self.mapping:
             profit_col = self.mapping['profit']
-            if profit_col in self.df.columns:
+            amount_col = self.mapping['total_amount']
+            if profit_col in self.df.columns and amount_col in self.df.columns:
                 try:
                     self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
+                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+                    
                     profitable_transactions = (self.df[profit_col] > 0).sum()
                     total_transactions = len(self.df)
-                    profitability_rate = (profitable_transactions / total_transactions) * 100
+                    profitability_rate = (profitable_transactions / total_transactions) * 100 if total_transactions > 0 else 0
                     
-                    insights.append(f"📊 **معدل الربحية**: {profitability_rate:.1f}% من المعاملات مربحة")
+                    insights.append(f"📊 **معدل المعاملات المربحة**: {profitability_rate:.1f}% من المعاملات")
+                    
+                    # حساب هامش الربح الكلي (إضافي للتوضيح)
+                    total_profit = self.df[profit_col].sum()
+                    total_sales = self.df[amount_col].sum()
+                    if total_sales > 0:
+                        overall_margin = (total_profit / total_sales) * 100
+                        insights.append(f"💰 **هامش الربح الكلي**: {overall_margin:.2f}%")
                 except:
                     pass
         
@@ -352,6 +384,24 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
+        # 6. فحص هوامش الربح غير المنطقية
+        if 'profit' in self.mapping and 'total_amount' in self.mapping:
+            profit_col = self.mapping['profit']
+            amount_col = self.mapping['total_amount']
+            if profit_col in self.df.columns and amount_col in self.df.columns:
+                try:
+                    profit_data = pd.to_numeric(self.df[profit_col], errors='coerce')
+                    amount_data = pd.to_numeric(self.df[amount_col], errors='coerce')
+                    
+                    # حساب الهوامش لكل صف
+                    margins = (profit_data / amount_data) * 100
+                    # هوامش غير منطقية (>100% أو <-100%)
+                    invalid_margins = ((margins > 100) | (margins < -100)).sum()
+                    if invalid_margins > 0:
+                        warnings.append(f"⚠️ يوجد {invalid_margins} معاملة بهامش ربح غير منطقي")
+                except:
+                    pass
+        
         return warnings
     
     def get_modified_dataframe(self):
@@ -377,7 +427,8 @@ class SalesDataAnalyzer:
         kpis = self._calculate_kpis()
         report_lines.append("المؤشرات الرئيسية (KPIs):")
         for kpi_name, kpi_info in kpis.items():
-            report_lines.append(f"- {kpi_info['label']}: {kpi_info['value']}")
+            note = f" ({kpi_info.get('note', '')})" if 'note' in kpi_info else ''
+            report_lines.append(f"- {kpi_info['label']}: {kpi_info['value']}{note}")
         report_lines.append("")
         
         # Insights
@@ -403,5 +454,6 @@ class SalesDataAnalyzer:
         report_lines.append("3. تحسين المنتجات الأكثر مبيعاً")
         report_lines.append("4. تحفيز مندوبي المبيعات بناءً على الأداء")
         report_lines.append("5. تحليل تأثير الخصومات على المبيعات")
+        report_lines.append("6. مراجعة هوامش الربح غير المنطقية في البيانات")
         
         return "\n".join(report_lines)
