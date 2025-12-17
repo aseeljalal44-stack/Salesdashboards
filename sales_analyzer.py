@@ -10,7 +10,6 @@ class SalesDataAnalyzer:
     def __init__(self, dataframe, column_mapping):
         self.df = dataframe.copy()
         self.mapping = column_mapping
-        self.reverse_mapping = {v: k for k, v in column_mapping.items() if v != "❌ لا يوجد"}
     
     def analyze_all(self):
         """إجراء جميع التحليلات المتاحة للمبيعات"""
@@ -78,6 +77,7 @@ class SalesDataAnalyzer:
                         if cost_col in self.df.columns:
                             try:
                                 self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
+                                self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
                                 
                                 # حساب تكلفة البضاعة المباعة
                                 if 'quantity' in self.mapping:
@@ -106,21 +106,6 @@ class SalesDataAnalyzer:
                                 }
                             except:
                                 pass
-                except:
-                    pass
-        
-        # إجمالي الربح
-        if 'profit' in self.mapping:
-            profit_col = self.mapping['profit']
-            if profit_col in self.df.columns:
-                try:
-                    self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-                    total_profit = self.df[profit_col].sum()
-                    kpis['total_profit'] = {
-                        'value': f"${total_profit:,.0f}",
-                        'label': 'إجمالي الربح',
-                        'icon': '📈'
-                    }
                 except:
                     pass
         
@@ -171,15 +156,13 @@ class SalesDataAnalyzer:
                     self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
                     
                     total_discount = self.df[discount_col].sum()
-                    total_sales_before_discount = self.df[amount_col].sum() + total_discount
+                    discount_rate = (total_discount / total_sales * 100) if total_sales > 0 else 0
                     
-                    if total_sales_before_discount > 0:
-                        discount_rate = (total_discount / total_sales_before_discount) * 100
-                        kpis['discount_rate'] = {
-                            'value': f"{discount_rate:.1f}%",
-                            'label': 'معدل الخصم',
-                            'icon': '🎯'
-                        }
+                    kpis['discount_rate'] = {
+                        'value': f"{discount_rate:.1f}%",
+                        'label': 'معدل الخصم',
+                        'icon': '🎯'
+                    }
                 except:
                     pass
         
@@ -244,11 +227,6 @@ class SalesDataAnalyzer:
                         monthly_trend['year_month'] = monthly_trend['year_month'].astype(str)
                         
                         trends['monthly'] = monthly_trend.to_dict('records')
-                        
-                        # النمو الشهري
-                        if len(monthly_trend) > 1:
-                            monthly_trend['growth'] = monthly_trend['sum'].pct_change() * 100
-                            trends['growth'] = monthly_trend[['year_month', 'growth']].dropna().to_dict('records')
                 except:
                     pass
         
@@ -309,29 +287,6 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
-        # 4. تحليل الربحية
-        if 'profit' in self.mapping:
-            profit_col = self.mapping['profit']
-            if profit_col in self.df.columns:
-                try:
-                    self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-                    profitable_transactions = (self.df[profit_col] > 0).sum()
-                    total_transactions = len(self.df)
-                    profitability_rate = (profitable_transactions / total_transactions) * 100
-                    
-                    insights.append(f"📊 **معدل الربحية**: {profitability_rate:.1f}% من المعاملات مربحة")
-                except:
-                    pass
-        
-        # 5. تحليل التكرار
-        if 'customer_id' in self.mapping:
-            customer_col = self.mapping['customer_id']
-            if customer_col in self.df.columns:
-                repeat_customers = self.df[customer_col].duplicated().sum()
-                if repeat_customers > 0:
-                    repeat_rate = (repeat_customers / len(self.df)) * 100
-                    insights.append(f"🔄 **معدل التكرار**: {repeat_rate:.1f}% من العملاء متكررون")
-        
         return insights
     
     def _check_data_quality(self):
@@ -362,36 +317,7 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
-        # 4. فحص الكميات غير المنطقية
-        if 'quantity' in self.mapping:
-            quantity_col = self.mapping['quantity']
-            if quantity_col in self.df.columns:
-                try:
-                    quantity_data = pd.to_numeric(self.df[quantity_col], errors='coerce')
-                    # كميات سالبة أو صفر
-                    invalid_quantities = ((quantity_data <= 0) | (quantity_data > 1000)).sum()
-                    if invalid_quantities > 0:
-                        warnings.append(f"⚠️ يوجد {invalid_quantities} معاملة بكمية غير منطقية")
-                except:
-                    pass
-        
-        # 5. فحص التواريخ غير المنطقية
-        if 'order_date' in self.mapping:
-            date_col = self.mapping['order_date']
-            if date_col in self.df.columns:
-                try:
-                    dates = pd.to_datetime(self.df[date_col], errors='coerce')
-                    future_dates = dates[dates > pd.Timestamp.now()]
-                    if len(future_dates) > 0:
-                        warnings.append(f"⚠️ يوجد {len(future_dates)} معاملة بتاريخ مستقبلي")
-                except:
-                    pass
-        
         return warnings
-    
-    def get_modified_dataframe(self):
-        """الحصول على البيانات بعد التعديل"""
-        return self.df
     
     def generate_report(self):
         """توليد تقرير نصي عن تحليل المبيعات"""
@@ -405,7 +331,6 @@ class SalesDataAnalyzer:
         # معلومات عامة
         report_lines.append("معلومات عامة:")
         report_lines.append(f"- عدد المعاملات: {len(self.df)}")
-        report_lines.append(f"- عدد الأعمدة: {len(self.df.columns)}")
         report_lines.append("")
         
         # KPIs
@@ -423,20 +348,8 @@ class SalesDataAnalyzer:
                 report_lines.append(f"- {insight}")
             report_lines.append("")
         
-        # Warnings
-        warnings = self._check_data_quality()
-        if warnings:
-            report_lines.append("تحذيرات جودة البيانات:")
-            for warning in warnings:
-                report_lines.append(f"- {warning}")
-            report_lines.append("")
-        
-        # Recommendations
-        report_lines.append("التوصيات:")
-        report_lines.append("1. التركيز على المناطق ذات الأداء العالي")
-        report_lines.append("2. تحليل أسباب المبيعات المنخفضة في المناطق الضعيفة")
-        report_lines.append("3. تحسين المنتجات الأكثر مبيعاً")
-        report_lines.append("4. تحفيز مندوبي المبيعات بناءً على الأداء")
-        report_lines.append("5. تحليل تأثير الخصومات على المبيعات")
-        
         return "\n".join(report_lines)
+    
+    def get_modified_dataframe(self):
+        """الحصول على البيانات بعد التعديل"""
+        return self.df
