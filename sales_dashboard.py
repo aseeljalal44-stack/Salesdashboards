@@ -593,8 +593,7 @@ class SalesDataAnalyzer:
         analysis_results['product_analysis'] = self._analyze_product_portfolio()
         
         return analysis_results
-    
-   def _calculate_kpis(self):
+    def _calculate_kpis(self):
     """حساب مؤشرات أداء المبيعات"""
     kpis = {}
     
@@ -765,6 +764,7 @@ class SalesDataAnalyzer:
                 pass
     
     return kpis
+    
     def _calculate_growth_metrics(self):
         """حساب مقاييس النمو"""
         growth_metrics = {}
@@ -2453,4 +2453,4 @@ with col2:
     <div style="text-align: center; color: #6B7280; font-size: 0.9rem;">
     <p>📊 نظام تحليل المبيعات الذكي | الإصدار 3.0 | يدعم العربية والإنجليزية</p>
     </div>
-    """, unsafe_allow_html=True)a
+    """, unsafe_allow_html=True)
