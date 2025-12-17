@@ -641,8 +641,38 @@ class SalesDataAnalyzer:
                 try:
                     self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
                     total_profit = self.df[profit_col].sum()
-                    profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
-                    
+                    # إجمالي الربح
+if 'profit' in self.mapping and 'total_amount' in self.mapping:
+    profit_col = self.mapping['profit']
+    amount_col = self.mapping['total_amount']
+
+    if profit_col in self.df.columns and amount_col in self.df.columns:
+        try:
+            self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
+            self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
+
+            total_profit = self.df[profit_col].sum()
+            total_sales = self.df[amount_col].sum()
+
+            profit_margin = (total_profit / total_sales * 100) if total_sales > 0 else 0
+
+            kpis['total_profit'] = {
+                'value': total_profit,
+                'formatted': f"${total_profit:,.0f}",
+                'label': TranslationSystem.t('kpi_profit'),
+                'icon': '📈',
+                'trend': 'positive' if total_profit > 0 else 'negative'
+            }
+
+            kpis['profit_margin'] = {
+                'value': profit_margin,
+                'formatted': f"{profit_margin:.1f}%",
+                'label': TranslationSystem.t('profit_margin'),
+                'icon': '📊',
+                'trend': 'positive' if profit_margin > 15 else 'neutral'
+            }
+        except:
+            pass
                     kpis['total_profit'] = {
                         'value': total_profit,
                         'formatted': f"${total_profit:,.0f}",
