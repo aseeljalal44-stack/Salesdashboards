@@ -1,5 +1,5 @@
 """
-لوحة تحكم المبيعات الذكية - ملف واحد موحد مع نظام ترجمة كامل وتقرير نصي مدمج
+لوحة تحكم المبيعات الاحترافية - منتج تحليلي متكامل
 """
 
 import streamlit as st
@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from io import BytesIO
 import textwrap
 
-# ==================== نظام الترجمة الكامل ====================
+# ==================== 1. نظام الترجمة المتكامل ====================
 
 class TranslationSystem:
     """نظام ترجمة متكامل ثنائي اللغة"""
@@ -23,15 +23,8 @@ class TranslationSystem:
         'ar': {
             # العنوان الرئيسي
             'dashboard_title': '📊 لوحة تحكم المبيعات الذكية',
-            'dashboard_subtitle': 'تحليل ذكي لبيانات المبيعات - رفع ملفات Excel/CSV متعددة',
-            
-            # هامش الربح الجديد
-            'gross_profit_margin': 'هامش الربح الإجمالي',
-            'gross_profit': 'الربح الإجمالي',
-            'cost_of_goods_sold': 'تكلفة البضاعة المباعة',
-            'gross_margin_formula': '(المبيعات - تكلفة البضاعة المباعة) ÷ المبيعات × 100',
-            'calculate_gross_margin': 'حساب هامش الربح الإجمالي',
-            'gross_margin_insight': 'تحليل هامش الربح الإجمالي',
+            'dashboard_subtitle': 'تحليل احترافي لبيانات المبيعات - مصمم للشركات الصغيرة والمتوسطة',
+            'audience_target': 'هذا المنتج مصمم للشركات الصغيرة والمتوسطة لفهم أداء المبيعات بسرعة',
             
             # الشريط الجانبي
             'sidebar_settings': '⚙️ الإعدادات',
@@ -106,7 +99,6 @@ class TranslationSystem:
             'field_salesperson': 'مندوب المبيعات',
             'field_payment_method': 'طريقة الدفع',
             'field_discount': 'الخصم',
-            'field_profit': 'الربح',
             'field_cost': 'التكلفة',
             'field_status': 'حالة الطلب',
             
@@ -121,11 +113,18 @@ class TranslationSystem:
             'kpi_transactions': 'إجمالي المعاملات',
             'kpi_sales': 'إجمالي المبيعات',
             'kpi_avg_transaction': 'متوسط قيمة المعاملة',
-            'kpi_profit': 'إجمالي الربح',
             'kpi_customers': 'عدد العملاء',
             'kpi_products': 'عدد المنتجات',
             'kpi_avg_quantity': 'متوسط الكمية',
             'kpi_discount_rate': 'معدل الخصم',
+            'gross_profit': 'الربح الإجمالي',
+            'gross_margin': 'هامش الربح الإجمالي',
+            
+            # التعريفات
+            'def_gross_profit': 'المبلغ المتبقي من الإيرادات بعد خصم تكلفة البضاعة المباعة',
+            'def_gross_margin': 'النسبة المئوية للإيرادات المتبقية بعد خصم تكلفة البضاعة المباعة',
+            'def_total_sales': 'إجمالي الإيرادات من جميع المعاملات',
+            'def_transactions': 'عدد الفواتير أو المعاملات المكتملة',
             
             # الرسوم البيانية
             'charts_title': '📊 الرسوم البيانية',
@@ -139,21 +138,12 @@ class TranslationSystem:
             'chart_profit_dist': 'توزيع الأرباح',
             'no_charts_data': '⚠️ لا توجد بيانات كافية لإنشاء الرسوم البيانية',
             
-            # التحليل المتقدم
-            'advanced_analysis': '🔍 تحليل متقدم',
-            'correlation_matrix': 'مصفوفة الارتباط',
-            'outlier_detection': 'كشف القيم الشاذة',
-            'outliers_found': 'تم اكتشاف {count} قيمة شاذة',
-            'no_outliers': '✅ لم يتم اكتشاف قيم شاذة',
-            'zero_std': 'انحراف معياري صفري - لا يمكن كشف القيم الشاذة',
-            
             # التقرير
-            'report_title': '📄 التقرير التحليلي الاحترافي',
-            'generate_report': '📋 إنشاء التقرير الاحترافي',
+            'report_title': '📄 التقرير التحليلي',
+            'generate_report': '📋 إنشاء التقرير',
             'copy_report': '📋 نسخ التقرير',
             'report_copied': '✅ تم نسخ التقرير إلى الحافظة',
             'executive_summary': 'الملخص التنفيذي',
-            'data_overview': 'نظرة عامة على البيانات',
             'key_findings': 'النقاط الرئيسية',
             'performance_analysis': 'تحليل الأداء',
             'recommendations': 'التوصيات الاستراتيجية',
@@ -189,46 +179,20 @@ class TranslationSystem:
             'warning': 'تحذير',
             'success': 'نجاح',
             'info': 'معلومة',
+            'definition': 'تعريف',
+            'explanation': 'تفسير',
             
-            # مصطلحات إضافية للتقرير
-            'report_id': 'رقم التقرير',
-            'report_period': 'فترة التقرير',
-            'market_share': 'حصصة السوق',
-            'growth_rate': 'معدل النمو',
-            'customer_satisfaction': 'رضا العملاء',
-            'revenue_breakdown': 'توزيع الإيرادات',
-            'performance_metrics': 'مقاييس الأداء',
-            'strategic_insights': 'رؤى استراتيجية',
-            'actionable_recommendations': 'توصيات قابلة للتنفيذ',
-            'risk_assessment': 'تقييم المخاطر',
-            'opportunity_analysis': 'تحليل الفرص',
-            'competitive_analysis': 'تحليل المنافسة',
-            'financial_summary': 'ملخص مالي',
-            'sales_forecast': 'توقعات المبيعات',
-            'customer_behavior': 'سلوك العملاء',
-            'product_performance': 'أداء المنتجات',
-            'regional_analysis': 'تحليل المناطق',
-            'quarterly_comparison': 'مقارنة ربع سنوية',
-            'annual_trends': 'اتجاهات سنوية',
-            'market_penetration': 'اختراق السوق',
-            'customer_acquisition': 'اكتساب العملاء',
-            'customer_retention': 'احتفاظ بالعملاء',
-            'return_on_investment': 'العائد على الاستثمار',
-            'operational_efficiency': 'الكفاءة التشغيلية',
+            # تعريفات النقاط
+            'missing_values_desc': 'نسبة البيانات الناقصة في هذا العمود',
+            'duplicates_desc': 'سجلات متكررة قد تؤثر على دقة التحليل',
+            'data_uniqueness_desc': 'تكرر العملاء أو المنتجات - طبيعي في بيانات التجزئة',
         },
         
         'en': {
             # Main Title
             'dashboard_title': '📊 Smart Sales Analytics Dashboard',
-            'dashboard_subtitle': 'Intelligent sales data analysis - Upload multiple Excel/CSV files',
-            
-            # Gross Profit Margin New
-            'gross_profit_margin': 'Gross Profit Margin',
-            'gross_profit': 'Gross Profit',
-            'cost_of_goods_sold': 'Cost of Goods Sold',
-            'gross_margin_formula': '(Sales - COGS) ÷ Sales × 100',
-            'calculate_gross_margin': 'Calculate Gross Profit Margin',
-            'gross_margin_insight': 'Gross Margin Analysis',
+            'dashboard_subtitle': 'Professional sales data analysis - Designed for small and medium businesses',
+            'audience_target': 'This product is designed for small and medium businesses to quickly understand sales performance',
             
             # Sidebar
             'sidebar_settings': '⚙️ Settings',
@@ -303,7 +267,6 @@ class TranslationSystem:
             'field_salesperson': 'Salesperson',
             'field_payment_method': 'Payment Method',
             'field_discount': 'Discount',
-            'field_profit': 'Profit',
             'field_cost': 'Cost',
             'field_status': 'Order Status',
             
@@ -318,11 +281,18 @@ class TranslationSystem:
             'kpi_transactions': 'Total Transactions',
             'kpi_sales': 'Total Sales',
             'kpi_avg_transaction': 'Average Transaction Value',
-            'kpi_profit': 'Total Profit',
             'kpi_customers': 'Number of Customers',
             'kpi_products': 'Number of Products',
             'kpi_avg_quantity': 'Average Quantity',
             'kpi_discount_rate': 'Discount Rate',
+            'gross_profit': 'Gross Profit',
+            'gross_margin': 'Gross Margin',
+            
+            # Definitions
+            'def_gross_profit': 'Revenue remaining after deducting cost of goods sold',
+            'def_gross_margin': 'Percentage of revenue remaining after deducting cost of goods sold',
+            'def_total_sales': 'Total revenue from all transactions',
+            'def_transactions': 'Number of completed invoices or transactions',
             
             # Charts
             'charts_title': '📊 Charts & Visualizations',
@@ -336,21 +306,12 @@ class TranslationSystem:
             'chart_profit_dist': 'Profit Distribution',
             'no_charts_data': '⚠️ Insufficient data to generate charts',
             
-            # Advanced Analysis
-            'advanced_analysis': '🔍 Advanced Analysis',
-            'correlation_matrix': 'Correlation Matrix',
-            'outlier_detection': 'Outlier Detection',
-            'outliers_found': 'Found {count} outliers',
-            'no_outliers': '✅ No outliers detected',
-            'zero_std': 'Zero standard deviation - Cannot detect outliers',
-            
             # Report
-            'report_title': '📄 Professional Analytical Report',
-            'generate_report': '📋 Generate Professional Report',
+            'report_title': '📄 Analytical Report',
+            'generate_report': '📋 Generate Report',
             'copy_report': '📋 Copy Report',
             'report_copied': '✅ Report copied to clipboard',
             'executive_summary': 'Executive Summary',
-            'data_overview': 'Data Overview',
             'key_findings': 'Key Findings',
             'performance_analysis': 'Performance Analysis',
             'recommendations': 'Strategic Recommendations',
@@ -386,34 +347,13 @@ class TranslationSystem:
             'warning': 'Warning',
             'success': 'Success',
             'info': 'Info',
+            'definition': 'Definition',
+            'explanation': 'Explanation',
             
-            # Additional report terms
-            'company_name': 'Excellence Trading Company',
-            'report_author': 'Analytics & Research Department',
-            'report_id': 'Report ID',
-            'report_period': 'Report Period',
-            'market_share': 'Market Share',
-            'growth_rate': 'Growth Rate',
-            'customer_satisfaction': 'Customer Satisfaction',
-            'revenue_breakdown': 'Revenue Breakdown',
-            'performance_metrics': 'Performance Metrics',
-            'strategic_insights': 'Strategic Insights',
-            'actionable_recommendations': 'Actionable Recommendations',
-            'risk_assessment': 'Risk Assessment',
-            'opportunity_analysis': 'Opportunity Analysis',
-            'competitive_analysis': 'Competitive Analysis',
-            'financial_summary': 'Financial Summary',
-            'sales_forecast': 'Sales Forecast',
-            'customer_behavior': 'Customer Behavior',
-            'product_performance': 'Product Performance',
-            'regional_analysis': 'Regional Analysis',
-            'quarterly_comparison': 'Quarterly Comparison',
-            'annual_trends': 'Annual Trends',
-            'market_penetration': 'Market Penetration',
-            'customer_acquisition': 'Customer Acquisition',
-            'customer_retention': 'Customer Retention',
-            'return_on_investment': 'Return on Investment',
-            'operational_efficiency': 'Operational Efficiency',
+            # Point definitions
+            'missing_values_desc': 'Percentage of missing data in this column',
+            'duplicates_desc': 'Duplicate records that may affect analysis accuracy',
+            'data_uniqueness_desc': 'Repeated customers or products - expected in retail datasets',
         }
     }
     
@@ -442,142 +382,7 @@ class TranslationSystem:
         lang = st.session_state.get('language', 'ar')
         return "'Cairo', 'Segoe UI', sans-serif" if lang == 'ar' else "'Segoe UI', Tahoma, Geneva, sans-serif"
 
-# ==================== 1. وحدة التعرف التلقائي على الأعمدة ====================
-
-class SalesAutoColumnMapper:
-    def __init__(self, dataframe):
-        self.df = dataframe
-        self.column_patterns = self._initialize_patterns()
-    
-    def _initialize_patterns(self):
-        """تهيئة الأنماط للتعرف على أعمدة المبيعات"""
-        return {
-            'order_id': {
-                'patterns': ['order.*id', 'order.*no', 'transaction.*id', 'رقم.*الطلب', 'معرف.*الطلب'],
-                'keywords': ['order', 'transaction', 'طلب', 'معرف']
-            },
-            'customer_id': {
-                'patterns': ['customer.*id', 'client.*id', 'cust.*id', 'رقم.*العميل', 'معرف.*العميل'],
-                'keywords': ['customer', 'client', 'عميل', 'زبون']
-            },
-            'customer_name': {
-                'patterns': ['customer.*name', 'client.*name', 'اسم.*العميل', 'العميل'],
-                'keywords': ['customer', 'client', 'اسم', 'name']
-            },
-            'product_id': {
-                'patterns': ['product.*id', 'item.*id', 'sku', 'رقم.*المنتج', 'معرف.*المنتج'],
-                'keywords': ['product', 'item', 'sku', 'منتج', 'سلعة']
-            },
-            'product_name': {
-                'patterns': ['product.*name', 'item.*name', 'اسم.*المنتج', 'المنتج'],
-                'keywords': ['product', 'item', 'اسم', 'name', 'منتج']
-            },
-            'category': {
-                'patterns': ['category', 'type', 'class', 'فئة', 'تصنيف', 'نوع'],
-                'keywords': ['category', 'type', 'فئة', 'تصنيف']
-            },
-            'quantity': {
-                'patterns': ['quantity', 'qty', 'amount', 'الكمية', 'عدد', 'مقدار'],
-                'keywords': ['quantity', 'qty', 'كمية', 'عدد']
-            },
-            'price': {
-                'patterns': ['price', 'unit.*price', 'cost', 'سعر', 'السعر', 'التكلفة'],
-                'keywords': ['price', 'cost', 'سعر', 'تكلفة']
-            },
-            'total_amount': {
-                'patterns': ['total', 'amount', 'revenue', 'المبلغ', 'الإجمالي', 'الإيراد'],
-                'keywords': ['total', 'amount', 'revenue', 'إجمالي', 'مبلغ']
-            },
-            'order_date': {
-                'patterns': ['order.*date', 'transaction.*date', 'date', 'تاريخ.*الطلب', 'التاريخ'],
-                'keywords': ['date', 'تاريخ', 'order', 'طلب']
-            },
-            'region': {
-                'patterns': ['region', 'area', 'zone', 'منطقة', 'المنطقة', 'الفرع'],
-                'keywords': ['region', 'area', 'zone', 'منطقة']
-            },
-            'city': {
-                'patterns': ['city', 'town', 'المدينة', 'مدينة'],
-                'keywords': ['city', 'town', 'مدينة']
-            },
-            'country': {
-                'patterns': ['country', 'state', 'البلد', 'الدولة'],
-                'keywords': ['country', 'state', 'بلد', 'دولة']
-            },
-            'salesperson': {
-                'patterns': ['salesperson', 'seller', 'agent', 'مندوب', 'البائع', 'الموظف'],
-                'keywords': ['sales', 'seller', 'agent', 'مندوب', 'بائع']
-            },
-            'payment_method': {
-                'patterns': ['payment.*method', 'payment.*type', 'طريقة.*الدفع', 'نوع.*الدفع'],
-                'keywords': ['payment', 'دفع', 'method', 'طريقة']
-            },
-            'discount': {
-                'patterns': ['discount', 'off', 'خصم', 'التخفيض'],
-                'keywords': ['discount', 'خصم', 'تخفيض']
-            },
-            'profit': {
-                'patterns': ['profit', 'margin', 'ربح', 'الربح', 'هامش'],
-                'keywords': ['profit', 'margin', 'ربح', 'هامش']
-            },
-            'cost': {
-                'patterns': ['cost', 'تكلفة', 'التكلفة', 'سعر.*التكلفة'],
-                'keywords': ['cost', 'تكلفة', 'cost', 'price']
-            },
-            'status': {
-                'patterns': ['status', 'state', 'condition', 'حالة', 'الحالة'],
-                'keywords': ['status', 'state', 'حالة']
-            }
-        }
-    
-    def auto_detect_columns(self):
-        """التعرف التلقائي على أنواع الأعمدة"""
-        suggestions = {}
-        columns = self.df.columns.tolist()
-        
-        for column in columns:
-            column_lower = str(column).lower()
-            
-            for field_type, patterns_info in self.column_patterns.items():
-                for pattern in patterns_info['patterns']:
-                    if re.search(pattern, column_lower, re.IGNORECASE):
-                        suggestions[field_type] = column
-                        break
-                
-                if field_type not in suggestions:
-                    for keyword in patterns_info['keywords']:
-                        if keyword.lower() in column_lower:
-                            suggestions[field_type] = column
-                            break
-            
-            if self._is_date_column(column):
-                if 'order_date' not in suggestions:
-                    suggestions['order_date'] = column
-        
-        return suggestions
-    
-    def _is_date_column(self, column_name):
-        """فحص إذا كان العمود يحتوي على تواريخ"""
-        if column_name not in self.df.columns:
-            return False
-        
-        column_sample = self.df[column_name].dropna().head(10)
-        
-        if len(column_sample) == 0:
-            return False
-        
-        try:
-            if pd.api.types.is_datetime64_any_dtype(self.df[column_name]):
-                return True
-            
-            test_dates = pd.to_datetime(column_sample, errors='coerce')
-            success_rate = test_dates.notna().sum() / len(column_sample)
-            
-            return success_rate > 0.7
-        except:
-            return False
-
-# ==================== 2. وحدة التحليل الذكي ====================
+# ==================== 2. وحدة التحليل الذكي (مُحسنة) ====================
 
 class SalesDataAnalyzer:
     def __init__(self, dataframe, column_mapping):
@@ -613,6 +418,7 @@ class SalesDataAnalyzer:
     def _calculate_kpis(self):
         """حساب مؤشرات أداء المبيعات"""
         kpis = {}
+        lang = st.session_state.get('language', 'ar')
         
         # إجمالي عدد المعاملات
         total_transactions = len(self.df)
@@ -621,7 +427,8 @@ class SalesDataAnalyzer:
             'formatted': f"{total_transactions:,}",
             'label': TranslationSystem.t('kpi_transactions'),
             'icon': '🛒',
-            'trend': 'neutral'
+            'trend': 'neutral',
+            'definition': TranslationSystem.t('def_transactions')
         }
         
         # إجمالي المبيعات
@@ -636,50 +443,9 @@ class SalesDataAnalyzer:
                         'formatted': f"${total_sales:,.0f}",
                         'label': TranslationSystem.t('kpi_sales'),
                         'icon': '💰',
-                        'trend': 'positive' if total_sales > 0 else 'negative'
+                        'trend': 'positive' if total_sales > 0 else 'negative',
+                        'definition': TranslationSystem.t('def_total_sales')
                     }
-                    
-                    # حساب الربح الإجمالي وهامش الربح الإجمالي
-                    if 'cost' in self.mapping:
-                        cost_col = self.mapping['cost']
-                        if cost_col in self.df.columns:
-                            try:
-                                self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
-                                
-                                # حساب تكلفة البضاعة المباعة
-                                if 'quantity' in self.mapping:
-                                    quantity_col = self.mapping['quantity']
-                                    if quantity_col in self.df.columns:
-                                        self.df[quantity_col] = pd.to_numeric(self.df[quantity_col], errors='coerce')
-                                        
-                                        # إذا كان العمود "cost" يمثل تكلفة الوحدة
-                                        if (self.df[cost_col] > 0).any() and (self.df[cost_col] < self.df[amount_col]).any():
-                                            # cost_col هو تكلفة الوحدة
-                                            total_cogs = (self.df[cost_col] * self.df[quantity_col]).sum()
-                                        else:
-                                            # cost_col قد يكون التكلفة الإجمالية
-                                            total_cogs = self.df[cost_col].sum()
-                                        
-                                        gross_profit = total_sales - total_cogs
-                                        gross_margin = (gross_profit / total_sales * 100) if total_sales > 0 else 0
-                                        
-                                        kpis['gross_profit'] = {
-                                            'value': gross_profit,
-                                            'formatted': f"${gross_profit:,.0f}",
-                                            'label': TranslationSystem.t('gross_profit'),
-                                            'icon': '📊',
-                                            'trend': 'positive' if gross_profit > 0 else 'negative'
-                                        }
-                                        
-                                        kpis['gross_margin'] = {
-                                            'value': gross_margin,
-                                            'formatted': f"{gross_margin:.1f}%",
-                                            'label': TranslationSystem.t('gross_profit_margin'),
-                                            'icon': '📈',
-                                            'trend': 'positive' if gross_margin > 30 else 'neutral' if gross_margin > 20 else 'negative'
-                                        }
-                            except:
-                                pass
                     
                     avg_transaction = total_sales / total_transactions if total_transactions > 0 else 0
                     kpis['avg_transaction'] = {
@@ -689,26 +455,56 @@ class SalesDataAnalyzer:
                         'icon': '📊',
                         'trend': 'positive' if avg_transaction > 0 else 'negative'
                     }
-                except:
-                    pass
+                except Exception as e:
+                    st.error(f"خطأ في حساب المبيعات: {str(e)}" if lang == 'ar' else f"Error calculating sales: {str(e)}")
         
-        # إجمالي الربح
-        if 'profit' in self.mapping:
-            profit_col = self.mapping['profit']
-            if profit_col in self.df.columns:
+        # حساب الربح الإجمالي وهامش الربح الإجمالي
+        if 'cost' in self.mapping and 'total_amount' in self.mapping:
+            cost_col = self.mapping['cost']
+            amount_col = self.mapping['total_amount']
+            
+            if cost_col in self.df.columns and amount_col in self.df.columns:
                 try:
-                    self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-                    total_profit = self.df[profit_col].sum()
+                    self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
+                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
                     
-                    kpis['total_profit'] = {
-                        'value': total_profit,
-                        'formatted': f"${total_profit:,.0f}",
-                        'label': TranslationSystem.t('kpi_profit'),
+                    # حساب تكلفة البضاعة المباعة
+                    if 'quantity' in self.mapping:
+                        quantity_col = self.mapping['quantity']
+                        if quantity_col in self.df.columns:
+                            self.df[quantity_col] = pd.to_numeric(self.df[quantity_col], errors='coerce')
+                            total_cogs = (self.df[cost_col] * self.df[quantity_col]).sum()
+                        else:
+                            total_cogs = self.df[cost_col].sum()
+                    else:
+                        total_cogs = self.df[cost_col].sum()
+                    
+                    total_sales = self.df[amount_col].sum()
+                    gross_profit = total_sales - total_cogs
+                    gross_margin = (gross_profit / total_sales * 100) if total_sales > 0 else 0
+                    
+                    kpis['gross_profit'] = {
+                        'value': gross_profit,
+                        'formatted': f"${gross_profit:,.0f}",
+                        'label': TranslationSystem.t('gross_profit'),
                         'icon': '📈',
-                        'trend': 'positive' if total_profit > 0 else 'negative'
+                        'trend': 'positive' if gross_profit > 0 else 'negative',
+                        'definition': TranslationSystem.t('def_gross_profit')
                     }
-                except:
-                    pass
+                    
+                    kpis['gross_margin'] = {
+                        'value': gross_margin,
+                        'formatted': f"{gross_margin:.1f}%",
+                        'label': TranslationSystem.t('gross_margin'),
+                        'icon': '📊',
+                        'trend': 'positive' if gross_margin > 15 else 'neutral',
+                        'definition': TranslationSystem.t('def_gross_margin')
+                    }
+                except Exception as e:
+                    if lang == 'ar':
+                        st.warning("لم يتم حساب الربح بسبب مشكلة في البيانات")
+                    else:
+                        st.warning("Profit calculation skipped due to data issue")
         
         # عدد العملاء الفريدين
         if 'customer_id' in self.mapping:
@@ -775,187 +571,51 @@ class SalesDataAnalyzer:
         
         return kpis
     
-    def _calculate_growth_metrics(self):
-        """حساب مقاييس النمو"""
-        growth_metrics = {}
+    def _check_data_quality(self):
+        """فحص جودة بيانات المبيعات"""
+        warnings = []
+        lang = st.session_state.get('language', 'ar')
         
-        if 'order_date' in self.mapping and 'total_amount' in self.mapping:
-            date_col = self.mapping['order_date']
+        # 1. فحص القيم المفقودة
+        missing_percentage = (self.df.isnull().sum() / len(self.df)) * 100
+        high_missing = missing_percentage[missing_percentage > 20].index.tolist()
+        
+        if high_missing:
+            if lang == 'ar':
+                warnings.append(f"⚠️ أعمدة بها قيم مفقودة >20%: {', '.join(high_missing[:3])}")
+            else:
+                warnings.append(f"⚠️ Columns with missing values >20%: {', '.join(high_missing[:3])}")
+        
+        # 2. فحص التكرارات
+        duplicates = self.df.duplicated().sum()
+        if duplicates > 0:
+            if lang == 'ar':
+                warnings.append(f"⚠️ يوجد {duplicates} سجل مكرر")
+            else:
+                warnings.append(f"⚠️ Found {duplicates} duplicate records")
+        
+        # 3. فحص القيم السلبية في المبالغ
+        if 'total_amount' in self.mapping:
             amount_col = self.mapping['total_amount']
-            
-            if date_col in self.df.columns and amount_col in self.df.columns:
+            if amount_col in self.df.columns:
                 try:
-                    df_copy = self.df.copy()
-                    df_copy[date_col] = pd.to_datetime(df_copy[date_col], errors='coerce')
-                    df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-                    
-                    df_clean = df_copy.dropna(subset=[date_col, amount_col])
-                    
-                    if len(df_clean) > 0:
-                        df_clean['year_month'] = df_clean[date_col].dt.to_period('M')
-                        monthly_sales = df_clean.groupby('year_month')[amount_col].sum()
-                        
-                        if len(monthly_sales) > 1:
-                            latest_month = monthly_sales.iloc[-1]
-                            previous_month = monthly_sales.iloc[-2]
-                            month_over_month_growth = ((latest_month - previous_month) / previous_month * 100) if previous_month > 0 else 0
-                            
-                            growth_metrics['mom_growth'] = {
-                                'value': month_over_month_growth,
-                                'formatted': f"{month_over_month_growth:+.1f}%",
-                                'label': 'Month-over-Month Growth'
-                            }
+                    amount_data = pd.to_numeric(self.df[amount_col], errors='coerce')
+                    negative_amounts = (amount_data < 0).sum()
+                    if negative_amounts > 0:
+                        if lang == 'ar':
+                            warnings.append(f"⚠️ يوجد {negative_amounts} معاملة بمبلغ سالب")
+                        else:
+                            warnings.append(f"⚠️ Found {negative_amounts} transactions with negative amounts")
                 except:
                     pass
         
-        return growth_metrics
-    
-    def _analyze_customer_segments(self):
-        """تحليل شرائح العملاء"""
-        customer_segments = {}
-        
-        if 'customer_id' in self.mapping and 'total_amount' in self.mapping:
-            customer_col = self.mapping['customer_id']
-            amount_col = self.mapping['total_amount']
-            
-            if customer_col in self.df.columns and amount_col in self.df.columns:
-                try:
-                    df_copy = self.df.copy()
-                    df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-                    
-                    customer_sales = df_copy.groupby(customer_col)[amount_col].sum().sort_values(ascending=False)
-                    
-                    if len(customer_sales) > 0:
-                        # تحليل العملاء حسب القيمة
-                        top_10_customers = customer_sales.head(10).to_dict()
-                        bottom_10_customers = customer_sales.tail(10).to_dict()
-                        
-                        customer_segments['top_customers'] = top_10_customers
-                        customer_segments['bottom_customers'] = bottom_10_customers
-                        
-                        # حساب متوسط قيمة العميل
-                        avg_customer_value = customer_sales.mean()
-                        customer_segments['avg_customer_value'] = avg_customer_value
-                        
-                        # تحليل توزيع العملاء
-                        segments = {
-                            'VIP': customer_sales[customer_sales > customer_sales.quantile(0.8)].count(),
-                            'High Value': customer_sales[(customer_sales <= customer_sales.quantile(0.8)) & 
-                                                         (customer_sales > customer_sales.quantile(0.5))].count(),
-                            'Medium Value': customer_sales[(customer_sales <= customer_sales.quantile(0.5)) & 
-                                                           (customer_sales > customer_sales.quantile(0.2))].count(),
-                            'Low Value': customer_sales[customer_sales <= customer_sales.quantile(0.2)].count()
-                        }
-                        
-                        customer_segments['value_segments'] = segments
-                except:
-                    pass
-        
-        return customer_segments
-    
-    def _analyze_product_portfolio(self):
-        """تحليل محفظة المنتجات"""
-        product_analysis = {}
-        
-        if 'product_name' in self.mapping and 'total_amount' in self.mapping and 'profit' in self.mapping:
-            product_col = self.mapping['product_name']
-            amount_col = self.mapping['total_amount']
-            profit_col = self.mapping['profit']
-            
-            if all(col in self.df.columns for col in [product_col, amount_col, profit_col]):
-                try:
-                    df_copy = self.df.copy()
-                    df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-                    df_copy[profit_col] = pd.to_numeric(df_copy[profit_col], errors='coerce')
-                    
-                    product_stats = df_copy.groupby(product_col).agg(
-                        total_sales=(amount_col, 'sum'),
-                        total_profit=(profit_col, 'sum'),
-                        transaction_count=(amount_col, 'count')
-                    ).reset_index()
-                    
-                    product_analysis['product_stats'] = product_stats.to_dict('records')
-                    
-                    # تحليل ABC (باريتو)
-                    product_stats_sorted = product_stats.sort_values('total_sales', ascending=False)
-                    product_stats_sorted['cumulative_percentage'] = (product_stats_sorted['total_sales'].cumsum() / 
-                                                                   product_stats_sorted['total_sales'].sum() * 100)
-                    
-                    product_analysis['pareto_analysis'] = product_stats_sorted.to_dict('records')
-                    
-                except:
-                    pass
-        
-        return product_analysis
-    
-    def _analyze_distributions(self):
-        """تحليل توزيع بيانات المبيعات"""
-        distributions = {}
-        
-        if 'region' in self.mapping:
-            region_col = self.mapping['region']
-            if region_col in self.df.columns:
-                region_dist = self.df[region_col].value_counts().to_dict()
-                distributions['region'] = region_dist
-        
-        if 'category' in self.mapping:
-            category_col = self.mapping['category']
-            if category_col in self.df.columns:
-                category_dist = self.df[category_col].value_counts().to_dict()
-                distributions['category'] = category_dist
-        
-        if 'product_name' in self.mapping:
-            product_col = self.mapping['product_name']
-            if product_col in self.df.columns:
-                product_dist = self.df[product_col].value_counts().head(10).to_dict()
-                distributions['top_products'] = product_dist
-        
-        if 'payment_method' in self.mapping:
-            payment_col = self.mapping['payment_method']
-            if payment_col in self.df.columns:
-                payment_dist = self.df[payment_col].value_counts().to_dict()
-                distributions['payment_method'] = payment_dist
-        
-        return distributions
-    
-    def _analyze_trends(self):
-        """تحليل اتجاهات المبيعات"""
-        trends = {}
-        
-        if 'order_date' in self.mapping and 'total_amount' in self.mapping:
-            date_col = self.mapping['order_date']
-            amount_col = self.mapping['total_amount']
-            
-            if date_col in self.df.columns and amount_col in self.df.columns:
-                try:
-                    df_copy = self.df.copy()
-                    df_copy[date_col] = pd.to_datetime(df_copy[date_col], errors='coerce')
-                    df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-                    
-                    df_clean = df_copy.dropna(subset=[date_col, amount_col])
-                    
-                    if len(df_clean) > 0:
-                        df_clean['year_month'] = df_clean[date_col].dt.to_period('M')
-                        monthly_trend = df_clean.groupby('year_month')[amount_col].agg(['sum', 'count']).reset_index()
-                        monthly_trend['year_month'] = monthly_trend['year_month'].astype(str)
-                        
-                        trends['monthly'] = monthly_trend.to_dict('records')
-                        
-                        # تحليل اتجاهات الموسمية
-                        df_clean['month'] = df_clean[date_col].dt.month
-                        monthly_pattern = df_clean.groupby('month')[amount_col].sum()
-                        trends['seasonality'] = monthly_pattern.to_dict()
-                except:
-                    pass
-        
-        return trends
+        return warnings
     
     def _extract_insights(self):
         """استخلاص رؤى من بيانات المبيعات"""
         insights = []
-        lang = TranslationSystem.t('language')
+        lang = st.session_state.get('language', 'ar')
         
-        # 1. أفضل منطقة مبيعات
         if 'region' in self.mapping and 'total_amount' in self.mapping:
             region_col = self.mapping['region']
             amount_col = self.mapping['total_amount']
@@ -969,13 +629,12 @@ class SalesDataAnalyzer:
                         top_region = region_sales.index[0]
                         top_sales = region_sales.iloc[0]
                         if lang == 'ar':
-                            insights.append(f"🏆 **المنطقة الأكثر ربحية**: {top_region} (${top_sales:,.0f})")
+                            insights.append(f"🏆 **أفضل منطقة مبيعات**: {top_region} (${top_sales:,.0f})")
                         else:
-                            insights.append(f"🏆 **Most Profitable Region**: {top_region} (${top_sales:,.0f})")
+                            insights.append(f"🏆 **Top Sales Region**: {top_region} (${top_sales:,.0f})")
                 except:
                     pass
         
-        # 2. أفضل منتج
         if 'product_name' in self.mapping and 'quantity' in self.mapping:
             product_col = self.mapping['product_name']
             quantity_col = self.mapping['quantity']
@@ -989,13 +648,12 @@ class SalesDataAnalyzer:
                         top_product = product_sales.index[0]
                         top_qty = product_sales.iloc[0]
                         if lang == 'ar':
-                            insights.append(f"📦 **المنتج الأكثر مبيعاً**: {top_product} ({top_qty:,} وحدة)")
+                            insights.append(f"📦 **أكثر منتج مبيعاً**: {top_product} ({top_qty:,} وحدة)")
                         else:
                             insights.append(f"📦 **Top Selling Product**: {top_product} ({top_qty:,} units)")
                 except:
                     pass
         
-        # 3. أفضل مندوب مبيعات
         if 'salesperson' in self.mapping and 'total_amount' in self.mapping:
             salesperson_col = self.mapping['salesperson']
             amount_col = self.mapping['total_amount']
@@ -1015,614 +673,195 @@ class SalesDataAnalyzer:
                 except:
                     pass
         
-        # 4. تحليل هامش الربح الإجمالي
-        if 'total_amount' in self.mapping and 'cost' in self.mapping:
-            amount_col = self.mapping['total_amount']
-            cost_col = self.mapping['cost']
-            
-            if amount_col in self.df.columns and cost_col in self.df.columns:
-                try:
-                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
-                    self.df[cost_col] = pd.to_numeric(self.df[cost_col], errors='coerce')
-                    
-                    total_sales = self.df[amount_col].sum()
-                    
-                    # حساب تكلفة البضاعة المباعة
-                    if 'quantity' in self.mapping:
-                        quantity_col = self.mapping['quantity']
-                        if quantity_col in self.df.columns:
-                            self.df[quantity_col] = pd.to_numeric(self.df[quantity_col], errors='coerce')
-                            total_cogs = (self.df[cost_col] * self.df[quantity_col]).sum()
-                        else:
-                            total_cogs = self.df[cost_col].sum()
-                    else:
-                        total_cogs = self.df[cost_col].sum()
-                    
-                    gross_profit = total_sales - total_cogs
-                    gross_margin = (gross_profit / total_sales * 100) if total_sales > 0 else 0
-                    
-                    if lang == 'ar':
-                        if gross_margin > 40:
-                            insights.append(f"✅ **هامش ربح إجمالي ممتاز**: {gross_margin:.1f}%")
-                        elif gross_margin > 20:
-                            insights.append(f"📊 **هامش ربح إجمالي جيد**: {gross_margin:.1f}%")
-                        elif gross_margin > 0:
-                            insights.append(f"⚠️ **هامش ربح إجمالي منخفض**: {gross_margin:.1f}%")
-                        else:
-                            insights.append(f"❌ **هامش ربح إجمالي سلبي**: {gross_margin:.1f}%")
-                    else:
-                        if gross_margin > 40:
-                            insights.append(f"✅ **Excellent Gross Margin**: {gross_margin:.1f}%")
-                        elif gross_margin > 20:
-                            insights.append(f"📊 **Good Gross Margin**: {gross_margin:.1f}%")
-                        elif gross_margin > 0:
-                            insights.append(f"⚠️ **Low Gross Margin**: {gross_margin:.1f}%")
-                        else:
-                            insights.append(f"❌ **Negative Gross Margin**: {gross_margin:.1f}%")
-                except:
-                    pass
-        
-        # 5. تحليل الربحية
-        if 'profit' in self.mapping:
-            profit_col = self.mapping['profit']
-            if profit_col in self.df.columns:
-                try:
-                    self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-                    profitable_transactions = (self.df[profit_col] > 0).sum()
-                    total_transactions = len(self.df)
-                    profitability_rate = (profitable_transactions / total_transactions) * 100
-                    
-                    if lang == 'ar':
-                        insights.append(f"📊 **معدل الربحية**: {profitability_rate:.1f}% من المعاملات مربحة")
-                    else:
-                        insights.append(f"📊 **Profitability Rate**: {profitability_rate:.1f}% of transactions are profitable")
-                except:
-                    pass
-        
-        # 6. تحليل التكرار
-        if 'customer_id' in self.mapping:
-            customer_col = self.mapping['customer_id']
-            if customer_col in self.df.columns:
-                repeat_customers = self.df[customer_col].duplicated().sum()
-                if repeat_customers > 0:
-                    repeat_rate = (repeat_customers / len(self.df)) * 100
-                    if lang == 'ar':
-                        insights.append(f"🔄 **معدل التكرار**: {repeat_rate:.1f}% من العملاء متكررون")
-                    else:
-                        insights.append(f"🔄 **Repeat Rate**: {repeat_rate:.1f}% of customers are repeat")
-        
-        return insights
-    
-    def _identify_top_performers(self):
-        """تحديد الأفضل أداءً"""
-        top_performers = {}
-        
-        if 'salesperson' in self.mapping and 'total_amount' in self.mapping:
-            salesperson_col = self.mapping['salesperson']
-            amount_col = self.mapping['total_amount']
-            
-            if salesperson_col in self.df.columns and amount_col in self.df.columns:
-                try:
-                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
-                    salesperson_performance = self.df.groupby(salesperson_col)[amount_col].sum().sort_values(ascending=False)
-                    
-                    if len(salesperson_performance) > 0:
-                        top_3_salespeople = salesperson_performance.head(3)
-                        top_performers['salesperson'] = {
-                            'top_3': [{'name': idx, 'value': val} for idx, val in top_3_salespeople.items()],
-                            'top_1': {'name': salesperson_performance.index[0], 'value': salesperson_performance.iloc[0]}
-                        }
-                except:
-                    pass
-        
-        if 'product_name' in self.mapping and 'profit' in self.mapping:
-            product_col = self.mapping['product_name']
-            profit_col = self.mapping['profit']
-            
-            if product_col in self.df.columns and profit_col in self.df.columns:
-                try:
-                    self.df[profit_col] = pd.to_numeric(self.df[profit_col], errors='coerce')
-                    product_profit = self.df.groupby(product_col)[profit_col].sum().sort_values(ascending=False)
-                    
-                    if len(product_profit) > 0:
-                        top_3_products = product_profit.head(3)
-                        top_performers['product_profit'] = {
-                            'top_3': [{'name': idx, 'value': val} for idx, val in top_3_products.items()],
-                            'top_1': {'name': product_profit.index[0], 'value': product_profit.iloc[0]}
-                        }
-                except:
-                    pass
-        
-        return top_performers
-    
-    def _check_data_quality(self):
-        """فحص جودة بيانات المبيعات"""
-        warnings = []
-        lang = TranslationSystem.t('language')
-        
-        missing_percentage = (self.df.isnull().sum() / len(self.df)) * 100
-        high_missing = missing_percentage[missing_percentage > 20].index.tolist()
-        
-        if high_missing:
+        # تحليل هامش الربح
+        if 'gross_margin' in self._calculate_kpis():
+            margin = self._calculate_kpis()['gross_margin']['value']
             if lang == 'ar':
-                warnings.append(f"⚠️ أعمدة بها قيم مفقودة >20%: {', '.join(high_missing[:3])}")
+                if margin > 20:
+                    insights.append(f"✅ **هامش ربح ممتاز**: {margin:.1f}% (أعلى من المتوسط)")
+                elif margin > 10:
+                    insights.append(f"⚠️ **هامش ربح متوسط**: {margin:.1f}% (بحاجة للتحسين)")
+                else:
+                    insights.append(f"❌ **هامش ربح منخفض**: {margin:.1f}% (تحتاج مراجعة)")
             else:
-                warnings.append(f"⚠️ Columns with missing values >20%: {', '.join(high_missing[:3])}")
+                if margin > 20:
+                    insights.append(f"✅ **Excellent Profit Margin**: {margin:.1f}% (Above average)")
+                elif margin > 10:
+                    insights.append(f"⚠️ **Average Profit Margin**: {margin:.1f}% (Needs improvement)")
+                else:
+                    insights.append(f"❌ **Low Profit Margin**: {margin:.1f}% (Review needed)")
         
-        duplicates = self.df.duplicated().sum()
-        if duplicates > 0:
-            if lang == 'ar':
-                warnings.append(f"⚠️ يوجد {duplicates} سجل مكرر")
-            else:
-                warnings.append(f"⚠️ Found {duplicates} duplicate records")
-        
-        if 'total_amount' in self.mapping:
-            amount_col = self.mapping['total_amount']
-            if amount_col in self.df.columns:
-                try:
-                    amount_data = pd.to_numeric(self.df[amount_col], errors='coerce')
-                    negative_amounts = (amount_data < 0).sum()
-                    if negative_amounts > 0:
-                        if lang == 'ar':
-                            warnings.append(f"⚠️ يوجد {negative_amounts} معاملة بمبلغ سالب")
-                        else:
-                            warnings.append(f"⚠️ Found {negative_amounts} transactions with negative amounts")
-                except:
-                    pass
-        
-        return warnings
+        return insights[:5]  # تقليل النقاط إلى 5 فقط
     
     def generate_professional_report(self, analysis_results):
-        """إنشاء تقرير احترافي كامل للمبيعات"""
-        lang = TranslationSystem.t('language')
-        current_date = datetime.now().strftime('%Y-%m-%d %H:%M')
-        report_id = f"SALE-{datetime.now().strftime('%Y%m%d')}-{np.random.randint(1000, 9999)}"
+        """إنشاء تقرير احترافي مختصر"""
+        lang = st.session_state.get('language', 'ar')
+        current_date = datetime.now().strftime('%Y-%m-%d')
         
         if lang == 'ar':
             report = f"""
-{'='*100}
-تقرير تحليل المبيعات الاحترافي
-{'='*100}
+{'='*80}
+تقرير تحليل المبيعات
+{'='*80}
 
-{TranslationSystem.t('company_name')}
-{TranslationSystem.t('report_author')}
-{'-'*60}
+📅 تاريخ التقرير: {current_date}
+📊 فترة التحليل: {self._get_date_range()}
+👥 الجمهور المستهدف: {TranslationSystem.t('audience_target')}
 
-🔹 {TranslationSystem.t('report_id')}: {report_id}
-🔹 {TranslationSystem.t('report_date')}: {current_date}
-🔹 {TranslationSystem.t('analysis_period')}: {self._get_date_range()}
-🔹 {TranslationSystem.t('total_records')}: {len(self.df):,}
-
-{'='*100}
+{'-'*80}
 الملخص التنفيذي
-{'='*100}
+{'-'*80}
 
-تم إجراء تحليل متعمق لبيانات المبيعات باستخدام منهجيات تحليلية متقدمة. 
-يقدم هذا التقرير رؤى استراتيجية قابلة للتنفيذ بناءً على البيانات الواقعية.
+تم إجراء تحليل شامل لبيانات المبيعات لاستخلاص رؤى قابلة للتنفيذ.
 
-📊 **النتائج الرئيسية:**
 • إجمالي المبيعات: {analysis_results['kpis'].get('total_sales', {}).get('formatted', 'غير متوفر')}
-• إجمالي الأرباح: {analysis_results['kpis'].get('total_profit', {}).get('formatted', 'غير متوفر')}
-• عدد العملاء: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'غير متوفر')}
+• عدد المعاملات: {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'غير متوفر')}
 • هامش الربح الإجمالي: {analysis_results['kpis'].get('gross_margin', {}).get('formatted', 'غير متوفر')}
 
-🎯 **النقاط البارزة:**
+{'-'*80}
+النقاط الرئيسية
+{'-'*80}
+
 """
-            for insight in analysis_results['insights'][:3]:
+            for insight in analysis_results['insights']:
                 report += f"• {insight.replace('**', '')}\n"
             
             report += f"""
-{'='*100}
-تحليل مقاييس الأداء (KPIs)
-{'='*100}
-
-مقاييس الأداء الرئيسية:
+{'-'*80}
+تحليل هامش الربح
+{'-'*80}
 
 """
-            for kpi_name, kpi_info in analysis_results['kpis'].items():
-                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 
-                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate',
-                               'gross_profit', 'gross_margin', 'avg_transaction']:
-                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
-            
-            report += f"""
-{'='*100}
-تحليل هامش الربح الإجمالي
-{'='*100}
-
-📊 **معادلة حساب هامش الربح الإجمالي:**
-• {TranslationSystem.t('gross_margin_formula')}
-
-📈 **نتائج التحليل:"""
-            
             if 'gross_margin' in analysis_results['kpis']:
-                gross_margin = analysis_results['kpis']['gross_margin']
-                report += f"""
-• {gross_margin['label']}: {gross_margin['formatted']}
-"""
-            
-            if 'gross_profit' in analysis_results['kpis']:
-                gross_profit = analysis_results['kpis']['gross_profit']
-                report += f"""• {gross_profit['label']}: {gross_profit['formatted']}
-"""
-            
-            report += f"""
-💡 **تفسير النتائج:"""
-            
-            if 'gross_margin' in analysis_results['kpis']:
-                margin_value = analysis_results['kpis']['gross_margin']['value']
-                if margin_value > 40:
-                    report += f"""
-• ✅ **ممتاز**: هامش ربح إجمالي فوق 40% يشير إلى كفاءة إنتاجية عالية وتكاليف منخفضة
-"""
-                elif margin_value > 20:
-                    report += f"""
-• 📊 **جيد**: هامش ربح إجمالي بين 20-40% يعتبر صحيًا لمعظم الشركات
-"""
-                elif margin_value > 0:
-                    report += f"""
-• ⚠️ **منخفض**: هامش ربح إجمالي أقل من 20% يحتاج لمراجعة التكاليف أو الأسعار
-"""
+                margin = analysis_results['kpis']['gross_margin']['value']
+                if margin > 20:
+                    report += f"✅ هامش الربح ممتاز ({margin:.1f}%)\n"
+                    report += "   (أعلى من متوسط الصناعة - حافظ على هذا الأداء)\n"
+                elif margin > 10:
+                    report += f"⚠️ هامش الربح متوسط ({margin:.1f}%)\n"
+                    report += "   (بحاجة للتحسين - راجع تكاليف البضاعة)\n"
                 else:
-                    report += f"""
-• ❌ **حرج**: هامش ربح إجمالي سلبي يعني أن التكاليف أعلى من المبيعات
-"""
+                    report += f"❌ هامش الربح منخفض ({margin:.1f}%)\n"
+                    report += "   (يتطلب مراجعة عاجلة - راجع التسعير والتكاليف)\n"
             
             report += f"""
-{'='*100}
-تحليل الأداء التفصيلي
-{'='*100}
+{'-'*80}
+التوصيات الاستراتيجية
+{'-'*80}
 
-📈 **الأفضل أداءً:**
+1. **تحسين هامش الربح**
+   • راجع تكاليف البضاعة
+   • عدل استراتيجية التسعير
+   • قلل الخصومات غير الضرورية
 
-"""
-            if 'salesperson' in analysis_results['top_performers']:
-                sp = analysis_results['top_performers']['salesperson']
-                report += f"👑 **أفضل مندوب مبيعات**: {sp['top_1']['name']} (${sp['top_1']['value']:,.0f})\n"
-                report += "🏅 **أفضل 3 مندوبين**:\n"
-                for i, sp_info in enumerate(sp['top_3'], 1):
-                    report += f"   {i}. {sp_info['name']}: ${sp_info['value']:,.0f}\n"
-            
-            report += f"""
-📦 **المنتجات الأكثر ربحية:**
+2. **تعزيز المناطق عالية الأداء**
+   • ركز التسويق على المناطق الرابحة
+   • زود المخزون فيها
 
-"""
-            if 'product_profit' in analysis_results['top_performers']:
-                pp = analysis_results['top_performers']['product_profit']
-                report += f"👑 **أكثر منتج ربحية**: {pp['top_1']['name']} (${pp['top_1']['value']:,.0f})\n"
-                report += "🏅 **أفضل 3 منتجات**:\n"
-                for i, pp_info in enumerate(pp['top_3'], 1):
-                    report += f"   {i}. {pp_info['name']}: ${pp_info['value']:,.0f}\n"
-            
-            report += f"""
-{'='*100}
-تحليل توزيع المبيعات
-{'='*100}
+3. **استثمار أفضل المنتجات**
+   • زد إنتاجية المنتجات الأكثر مبيعاً
+   • طور منتجات مشابهة لها
 
-📍 **توزيع جغرافي:**
-"""
-            if 'region' in analysis_results['distributions']:
-                region_dist = analysis_results['distributions']['region']
-                total_regions = sum(region_dist.values())
-                for region, count in list(region_dist.items())[:5]:
-                    percentage = (count / total_regions * 100) if total_regions > 0 else 0
-                    report += f"• {region}: {count} معاملة ({percentage:.1f}%)\n"
-            
-            report += f"""
-🏷️ **توزيع الفئات:**
-"""
-            if 'category' in analysis_results['distributions']:
-                category_dist = analysis_results['distributions']['category']
-                total_categories = sum(category_dist.values())
-                for category, count in list(category_dist.items())[:5]:
-                    percentage = (count / total_categories * 100) if total_categories > 0 else 0
-                    report += f"• {category}: {count} منتج ({percentage:.1f}%)\n"
-            
-            report += f"""
-{'='*100}
-تحليل جودة البيانات
-{'='*100}
+{'-'*80}
+جودة البيانات
+{'-'*80}
 
-🔍 **مؤشرات جودة البيانات:**
 """
             if analysis_results['warnings']:
+                report += "⚠️ تم اكتشاف بعض المشاكل:\n"
                 for warning in analysis_results['warnings']:
                     report += f"• {warning}\n"
             else:
                 report += "✅ جودة البيانات ممتازة - لا توجد مشاكل رئيسية\n"
             
             report += f"""
-📊 **إحصائيات البيانات:**
-• إجمالي السجلات: {len(self.df):,}
-• إجمالي الأعمدة: {len(self.df.columns)}
-• نسبة البيانات المكتملة: {((1 - (self.df.isnull().sum().sum() / (len(self.df) * len(self.df.columns)))) * 100):.1f}%
-• نسبة البيانات الفريدة: {(self.df.nunique().sum() / (len(self.df) * len(self.df.columns)) * 100):.1f}%
-
-{'='*100}
-التوصيات الاستراتيجية
-{'='*100}
-
-🚀 **توصيات قابلة للتنفيذ:**
-
-1. **التركيز على المناطق عالية الأداء**
-   • زيادة الاستثمار في التسويق بالمناطق الأعلى ربحية
-   • تطوير استراتيجيات مخصصة لكل منطقة
-
-2. **تحسين محفظة المنتجات**
-   • التركيز على المنتجات عالية الربحية
-   • تحليل أسباب نجاح المنتجات الرائدة
-
-3. **تحسين أداء فرق المبيعات**
-   • دراسة استراتيجيات المندوبين الأوائل
-   • تطوير برامج تدريب مبنية على أفضل الممارسات
-
-4. **تحسين جودة البيانات**
-   • معالجة القيم المفقودة
-   • توحيد تنسيقات البيانات
-
-5. **تحسين استراتيجيات التسعير**
-   • تحليل تأثير الخصومات على الربحية
-   • تطوير استراتيجيات تسعير ديناميكية
-
-{'='*100}
-ملاحق التقرير
-{'='*100}
-
-📅 **فترة التحليل:** {self._get_date_range()}
-📊 **إجمالي المعاملات:** {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'غير متوفر')}
-💰 **متوسط قيمة المعاملة:** {analysis_results['kpis'].get('avg_transaction', {}).get('formatted', 'غير متوفر')}
-👥 **متوسط قيمة العميل:** ${self._calculate_avg_customer_value():,.0f}
-📦 **عدد المنتجات الفريدة:** {analysis_results['kpis'].get('unique_products', {}).get('formatted', 'غير متوفر')}
-
-{'='*100}
-ملاحظات نهائية
-{'='*100}
-
-📌 **نقاط مهمة:**
-• تم إعداد هذا التقرير باستخدام تقنيات تحليلية متقدمة
-• جميع البيانات معتمدة من مصادر موثوقة
-• التوصيات قابلة للقياس والتنفيذ
-
-📞 **للاستفسارات:**
-{TranslationSystem.t('report_author')}
-report@company.com
-+966 55 123 4567
-
-{'='*100}
+{'='*80}
 نهاية التقرير
-{'='*100}
+{'='*80}
 """
         else:
             report = f"""
-{'='*100}
-PROFESSIONAL SALES ANALYSIS REPORT
-{'='*100}
+{'='*80}
+SALES ANALYSIS REPORT
+{'='*80}
 
-{TranslationSystem.t('company_name')}
-{TranslationSystem.t('report_author')}
-{'-'*60}
+📅 Report Date: {current_date}
+📊 Analysis Period: {self._get_date_range()}
+👥 Target Audience: {TranslationSystem.t('audience_target')}
 
-🔹 {TranslationSystem.t('report_id')}: {report_id}
-🔹 {TranslationSystem.t('report_date')}: {current_date}
-🔹 {TranslationSystem.t('analysis_period')}: {self._get_date_range()}
-🔹 {TranslationSystem.t('total_records')}: {len(self.df):,}
-
-{'='*100}
+{'-'*80}
 EXECUTIVE SUMMARY
-{'='*100}
+{'-'*80}
 
-A comprehensive analysis of sales data has been conducted using advanced analytical methodologies. 
-This report provides actionable strategic insights based on factual data.
+Comprehensive sales data analysis conducted to extract actionable insights.
 
-📊 **Key Results:**
 • Total Sales: {analysis_results['kpis'].get('total_sales', {}).get('formatted', 'N/A')}
-• Total Profit: {analysis_results['kpis'].get('total_profit', {}).get('formatted', 'N/A')}
-• Customer Count: {analysis_results['kpis'].get('unique_customers', {}).get('formatted', 'N/A')}
-• Gross Profit Margin: {analysis_results['kpis'].get('gross_margin', {}).get('formatted', 'N/A')}
+• Total Transactions: {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'N/A')}
+• Gross Margin: {analysis_results['kpis'].get('gross_margin', {}).get('formatted', 'N/A')}
 
-🎯 **Key Highlights:**
+{'-'*80}
+KEY FINDINGS
+{'-'*80}
+
 """
-            for insight in analysis_results['insights'][:3]:
+            for insight in analysis_results['insights']:
                 report += f"• {insight.replace('**', '')}\n"
             
             report += f"""
-{'='*100}
-KEY PERFORMANCE INDICATORS (KPIs)
-{'='*100}
-
-Core Performance Metrics:
+{'-'*80}
+GROSS MARGIN ANALYSIS
+{'-'*80}
 
 """
-            for kpi_name, kpi_info in analysis_results['kpis'].items():
-                if kpi_name in ['total_transactions', 'total_sales', 'total_profit', 
-                               'unique_customers', 'unique_products', 'avg_quantity', 'discount_rate',
-                               'gross_profit', 'gross_margin', 'avg_transaction']:
-                    report += f"• {kpi_info['icon']} **{kpi_info['label']}**: {kpi_info['formatted']}\n"
-            
-            report += f"""
-{'='*100}
-GROSS PROFIT MARGIN ANALYSIS
-{'='*100}
-
-📊 **Gross Profit Margin Formula:**
-• {TranslationSystem.t('gross_margin_formula')}
-
-📈 **Analysis Results:"""
-            
             if 'gross_margin' in analysis_results['kpis']:
-                gross_margin = analysis_results['kpis']['gross_margin']
-                report += f"""
-• {gross_margin['label']}: {gross_margin['formatted']}
-"""
-            
-            if 'gross_profit' in analysis_results['kpis']:
-                gross_profit = analysis_results['kpis']['gross_profit']
-                report += f"""• {gross_profit['label']}: {gross_profit['formatted']}
-"""
-            
-            report += f"""
-💡 **Interpretation:"""
-            
-            if 'gross_margin' in analysis_results['kpis']:
-                margin_value = analysis_results['kpis']['gross_margin']['value']
-                if margin_value > 40:
-                    report += f"""
-• ✅ **Excellent**: Gross margin above 40% indicates high production efficiency and low costs
-"""
-                elif margin_value > 20:
-                    report += f"""
-• 📊 **Good**: Gross margin between 20-40% is healthy for most companies
-"""
-                elif margin_value > 0:
-                    report += f"""
-• ⚠️ **Low**: Gross margin below 20% needs review of costs or pricing
-"""
+                margin = analysis_results['kpis']['gross_margin']['value']
+                if margin > 20:
+                    report += f"✅ Excellent Profit Margin ({margin:.1f}%)\n"
+                    report += "   (Above industry average - Maintain this performance)\n"
+                elif margin > 10:
+                    report += f"⚠️ Average Profit Margin ({margin:.1f}%)\n"
+                    report += "   (Needs improvement - Review cost of goods)\n"
                 else:
-                    report += f"""
-• ❌ **Critical**: Negative gross margin means costs exceed sales
-"""
+                    report += f"❌ Low Profit Margin ({margin:.1f}%)\n"
+                    report += "   (Requires urgent review - Check pricing and costs)\n"
             
             report += f"""
-{'='*100}
-DETAILED PERFORMANCE ANALYSIS
-{'='*100}
+{'-'*80}
+STRATEGIC RECOMMENDATIONS
+{'-'*80}
 
-📈 **Top Performers:**
+1. **Improve Profit Margin**
+   • Review cost of goods
+   • Adjust pricing strategy
+   • Reduce unnecessary discounts
 
-"""
-            if 'salesperson' in analysis_results['top_performers']:
-                sp = analysis_results['top_performers']['salesperson']
-                report += f"👑 **Top Salesperson**: {sp['top_1']['name']} (${sp['top_1']['value']:,.0f})\n"
-                report += "🏅 **Top 3 Salespeople**:\n"
-                for i, sp_info in enumerate(sp['top_3'], 1):
-                    report += f"   {i}. {sp_info['name']}: ${sp_info['value']:,.0f}\n"
-            
-            report += f"""
-📦 **Most Profitable Products:**
+2. **Enhance High-Performing Regions**
+   • Focus marketing on profitable regions
+   • Increase stock availability
 
-"""
-            if 'product_profit' in analysis_results['top_performers']:
-                pp = analysis_results['top_performers']['product_profit']
-                report += f"👑 **Most Profitable Product**: {pp['top_1']['name']} (${pp['top_1']['value']:,.0f})\n"
-                report += "🏅 **Top 3 Products**:\n"
-                for i, pp_info in enumerate(pp['top_3'], 1):
-                    report += f"   {i}. {pp_info['name']}: ${pp_info['value']:,.0f}\n"
-            
-            report += f"""
-{'='*100}
-SALES DISTRIBUTION ANALYSIS
-{'='*100}
+3. **Invest in Top Products**
+   • Increase production of best-selling products
+   • Develop similar products
 
-📍 **Geographical Distribution:**
-"""
-            if 'region' in analysis_results['distributions']:
-                region_dist = analysis_results['distributions']['region']
-                total_regions = sum(region_dist.values())
-                for region, count in list(region_dist.items())[:5]:
-                    percentage = (count / total_regions * 100) if total_regions > 0 else 0
-                    report += f"• {region}: {count} transactions ({percentage:.1f}%)\n"
-            
-            report += f"""
-🏷️ **Category Distribution:**
-"""
-            if 'category' in analysis_results['distributions']:
-                category_dist = analysis_results['distributions']['category']
-                total_categories = sum(category_dist.values())
-                for category, count in list(category_dist.items())[:5]:
-                    percentage = (count / total_categories * 100) if total_categories > 0 else 0
-                    report += f"• {category}: {count} products ({percentage:.1f}%)\n"
-            
-            report += f"""
-{'='*100}
-DATA QUALITY ASSESSMENT
-{'='*100}
+{'-'*80}
+DATA QUALITY
+{'-'*80}
 
-🔍 **Data Quality Indicators:**
 """
             if analysis_results['warnings']:
+                report += "⚠️ Some issues detected:\n"
                 for warning in analysis_results['warnings']:
                     report += f"• {warning}\n"
             else:
                 report += "✅ Excellent data quality - No major issues found\n"
             
             report += f"""
-📊 **Data Statistics:**
-• Total Records: {len(self.df):,}
-• Total Columns: {len(self.df.columns)}
-• Data Completeness: {((1 - (self.df.isnull().sum().sum() / (len(self.df) * len(self.df.columns)))) * 100):.1f}%
-• Data Uniqueness: {(self.df.nunique().sum() / (len(self.df) * len(self.df.columns)) * 100):.1f}%
-
-{'='*100}
-STRATEGIC RECOMMENDATIONS
-{'='*100}
-
-🚀 **Actionable Recommendations:**
-
-1. **Focus on High-Performing Regions**
-   • Increase marketing investment in top-performing regions
-   • Develop region-specific strategies
-
-2. **Optimize Product Portfolio**
-   • Focus on high-profit margin products
-   • Analyze success factors of top products
-
-3. **Enhance Sales Team Performance**
-   • Study top salesperson strategies
-   • Develop training programs based on best practices
-
-4. **Improve Data Quality**
-   • Address missing values
-   • Standardize data formats
-
-5. **Optimize Pricing Strategies**
-   • Analyze discount impact on profitability
-   • Develop dynamic pricing strategies
-
-{'='*100}
-REPORT APPENDICES
-{'='*100}
-
-📅 **Analysis Period:** {self._get_date_range()}
-📊 **Total Transactions:** {analysis_results['kpis'].get('total_transactions', {}).get('formatted', 'N/A')}
-💰 **Average Transaction Value:** {analysis_results['kpis'].get('avg_transaction', {}).get('formatted', 'N/A')}
-👥 **Average Customer Value:** ${self._calculate_avg_customer_value():,.0f}
-📦 **Unique Product Count:** {analysis_results['kpis'].get('unique_products', {}).get('formatted', 'N/A')}
-
-{'='*100}
-FINAL NOTES
-{'='*100}
-
-📌 **Important Points:**
-• This report was prepared using advanced analytical techniques
-• All data is verified from reliable sources
-• Recommendations are measurable and actionable
-
-📞 **For Inquiries:**
-{TranslationSystem.t('report_author')}
-report@company.com
-+966 55 123 4567
-
-{'='*100}
+{'='*80}
 END OF REPORT
-{'='*100}
+{'='*80}
 """
         
         return report
-    
-    def _calculate_avg_customer_value(self):
-        """حساب متوسط قيمة العميل"""
-        if 'customer_id' in self.mapping and 'total_amount' in self.mapping:
-            customer_col = self.mapping['customer_id']
-            amount_col = self.mapping['total_amount']
-            
-            if customer_col in self.df.columns and amount_col in self.df.columns:
-                try:
-                    self.df[amount_col] = pd.to_numeric(self.df[amount_col], errors='coerce')
-                    customer_sales = self.df.groupby(customer_col)[amount_col].sum()
-                    return customer_sales.mean() if len(customer_sales) > 0 else 0
-                except:
-                    pass
-        return 0
     
     def _get_date_range(self):
         """الحصول على نطاق التاريخ من البيانات"""
@@ -1635,342 +874,19 @@ END OF REPORT
                     max_date = dates.max()
                     
                     if pd.notna(min_date) and pd.notna(max_date):
-                        if TranslationSystem.t('language') == 'ar':
+                        if st.session_state.get('language', 'ar') == 'ar':
                             return f"{min_date.strftime('%Y-%m-%d')} إلى {max_date.strftime('%Y-%m-%d')}"
                         else:
                             return f"{min_date.strftime('%Y-%m-%d')} to {max_date.strftime('%Y-%m-%d')}"
                 except:
                     pass
         
-        if TranslationSystem.t('language') == 'ar':
+        if st.session_state.get('language', 'ar') == 'ar':
             return "غير متوفر"
         else:
             return "Not available"
 
-# ==================== 3. وحدة الرسوم البيانية ====================
-
-class SalesVisualizer:
-    def __init__(self, dataframe, column_mapping, analysis_results):
-        self.df = dataframe
-        self.mapping = column_mapping
-        self.analysis = analysis_results
-    
-    def generate_all_charts(self):
-        """توليد جميع الرسوم البيانية الممكنة للمبيعات"""
-        charts = []
-        
-        charts.append(self._create_sales_trend_chart())
-        charts.append(self._create_top_products_chart())
-        charts.append(self._create_region_chart())
-        charts.append(self._create_category_chart())
-        charts.append(self._create_salesperson_chart())
-        charts.append(self._create_price_quantity_chart())
-        charts.append(self._create_payment_method_chart())
-        charts.append(self._create_profit_chart())
-        
-        return [chart for chart in charts if chart is not None]
-    
-    def _create_sales_trend_chart(self):
-        """إنشاء رسم اتجاه المبيعات عبر الزمن"""
-        if 'order_date' not in self.mapping or 'total_amount' not in self.mapping:
-            return None
-        
-        date_col = self.mapping['order_date']
-        amount_col = self.mapping['total_amount']
-        
-        if date_col not in self.df.columns or amount_col not in self.df.columns:
-            return None
-        
-        try:
-            df_copy = self.df.copy()
-            df_copy[date_col] = pd.to_datetime(df_copy[date_col], errors='coerce')
-            df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-            
-            df_clean = df_copy.dropna(subset=[date_col, amount_col])
-            
-            if len(df_clean) == 0:
-                return None
-            
-            df_clean['year_month'] = df_clean[date_col].dt.to_period('M').dt.to_timestamp()
-            sales_trend = df_clean.groupby('year_month')[amount_col].sum().reset_index()
-            
-            fig = px.line(
-                sales_trend,
-                x='year_month',
-                y=amount_col,
-                title=TranslationSystem.t('chart_sales_trend'),
-                labels={'year_month': TranslationSystem.t('order_date'), amount_col: TranslationSystem.t('total_amount')}
-            )
-            
-            fig.update_traces(mode='lines+markers')
-            
-            return {
-                'title': TranslationSystem.t('chart_sales_trend'),
-                'figure': fig
-            }
-        except:
-            return None
-    
-    def _create_top_products_chart(self):
-        """إنشاء رسم أفضل المنتجات مبيعاً"""
-        if 'product_name' not in self.mapping or 'quantity' not in self.mapping:
-            return None
-        
-        product_col = self.mapping['product_name']
-        quantity_col = self.mapping['quantity']
-        
-        if product_col not in self.df.columns or quantity_col not in self.df.columns:
-            return None
-        
-        try:
-            df_copy = self.df.copy()
-            df_copy[quantity_col] = pd.to_numeric(df_copy[quantity_col], errors='coerce')
-            
-            product_sales = df_copy.groupby(product_col)[quantity_col].sum().reset_index()
-            product_sales = product_sales.sort_values(quantity_col, ascending=False).head(10)
-            
-            fig = px.bar(
-                product_sales,
-                x=quantity_col,
-                y=product_col,
-                orientation='h',
-                color=quantity_col,
-                color_continuous_scale='Viridis',
-                title=TranslationSystem.t('chart_top_products')
-            )
-            
-            fig.update_layout(
-                xaxis_title=TranslationSystem.t('quantity'),
-                yaxis_title=TranslationSystem.t('product_name'),
-                coloraxis_showscale=False
-            )
-            
-            return {
-                'title': TranslationSystem.t('chart_top_products'),
-                'figure': fig
-            }
-        except:
-            return None
-    
-    def _create_region_chart(self):
-        """إنشاء رسم توزيع المبيعات حسب المنطقة"""
-        if 'region' not in self.mapping or 'total_amount' not in self.mapping:
-            return None
-        
-        region_col = self.mapping['region']
-        amount_col = self.mapping['total_amount']
-        
-        if region_col not in self.df.columns or amount_col not in self.df.columns:
-            return None
-        
-        try:
-            df_copy = self.df.copy()
-            df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-            
-            region_sales = df_copy.groupby(region_col)[amount_col].sum().reset_index()
-            
-            fig = px.pie(
-                region_sales,
-                values=amount_col,
-                names=region_col,
-                title=TranslationSystem.t('chart_region_dist'),
-                hole=0.4
-            )
-            
-            fig.update_traces(textposition='inside', textinfo='percent+label')
-            
-            return {
-                'title': TranslationSystem.t('chart_region_dist'),
-                'figure': fig
-            }
-        except:
-            return None
-    
-    def _create_category_chart(self):
-        """إنشاء رسم توزيع المبيعات حسب الفئة"""
-        if 'category' not in self.mapping or 'total_amount' not in self.mapping:
-            return None
-        
-        category_col = self.mapping['category']
-        amount_col = self.mapping['total_amount']
-        
-        if category_col not in self.df.columns or amount_col not in self.df.columns:
-            return None
-        
-        try:
-            df_copy = self.df.copy()
-            df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-            
-            category_sales = df_copy.groupby(category_col)[amount_col].sum().reset_index()
-            category_sales = category_sales.sort_values(amount_col, ascending=False).head(8)
-            
-            fig = px.bar(
-                category_sales,
-                x=category_col,
-                y=amount_col,
-                color=amount_col,
-                color_continuous_scale='Blues',
-                title=TranslationSystem.t('chart_category_dist')
-            )
-            
-            fig.update_layout(
-                xaxis_title=TranslationSystem.t('category'),
-                yaxis_title=TranslationSystem.t('total_amount'),
-                coloraxis_showscale=False
-            )
-            
-            return {
-                'title': TranslationSystem.t('chart_category_dist'),
-                'figure': fig
-            }
-        except:
-            return None
-    
-    def _create_salesperson_chart(self):
-        """إنشاء رسم أداء مندوبي المبيعات"""
-        if 'salesperson' not in self.mapping or 'total_amount' not in self.mapping:
-            return None
-        
-        salesperson_col = self.mapping['salesperson']
-        amount_col = self.mapping['total_amount']
-        
-        if salesperson_col not in self.df.columns or amount_col not in self.df.columns:
-            return None
-        
-        try:
-            df_copy = self.df.copy()
-            df_copy[amount_col] = pd.to_numeric(df_copy[amount_col], errors='coerce')
-            
-            salesperson_performance = df_copy.groupby(salesperson_col)[amount_col].sum().reset_index()
-            salesperson_performance = salesperson_performance.sort_values(amount_col, ascending=False).head(10)
-            
-            fig = px.bar(
-                salesperson_performance,
-                x=salesperson_col,
-                y=amount_col,
-                color=amount_col,
-                color_continuous_scale='RdYlGn',
-                title=TranslationSystem.t('chart_sales_performance')
-            )
-            
-            fig.update_layout(
-                xaxis_title=TranslationSystem.t('salesperson'),
-                yaxis_title=TranslationSystem.t('total_amount'),
-                coloraxis_showscale=False
-            )
-            
-            return {
-                'title': TranslationSystem.t('chart_sales_performance'),
-                'figure': fig
-            }
-        except:
-            return None
-    
-    def _create_price_quantity_chart(self):
-        """إنشاء رسم علاقة السعر بالكمية"""
-        if 'price' not in self.mapping or 'quantity' not in self.mapping:
-            return None
-        
-        price_col = self.mapping['price']
-        quantity_col = self.mapping['quantity']
-        
-        if price_col not in self.df.columns or quantity_col not in self.df.columns:
-            return None
-        
-        try:
-            df_copy = self.df.copy()
-            df_copy[price_col] = pd.to_numeric(df_copy[price_col], errors='coerce')
-            df_copy[quantity_col] = pd.to_numeric(df_copy[quantity_col], errors='coerce')
-            
-            df_clean = df_copy.dropna(subset=[price_col, quantity_col])
-            
-            if len(df_clean) == 0:
-                return None
-            
-            fig = px.scatter(
-                df_clean,
-                x=price_col,
-                y=quantity_col,
-                trendline="ols",
-                title=TranslationSystem.t('chart_price_quantity'),
-                labels={price_col: TranslationSystem.t('unit_price'), quantity_col: TranslationSystem.t('quantity')}
-            )
-            
-            return {
-                'title': TranslationSystem.t('chart_price_quantity'),
-                'figure': fig
-            }
-        except:
-            return None
-    
-    def _create_payment_method_chart(self):
-        """إنشاء رسم توزيع طرق الدفع"""
-        if 'payment_method' not in self.mapping:
-            return None
-        
-        payment_col = self.mapping['payment_method']
-        
-        if payment_col not in self.df.columns:
-            return None
-        
-        payment_counts = self.df[payment_col].value_counts().reset_index()
-        payment_counts.columns = ['payment_method', 'count']
-        
-        fig = px.pie(
-            payment_counts,
-            values='count',
-            names='payment_method',
-            title=TranslationSystem.t('chart_payment_methods'),
-            hole=0.3
-        )
-        
-        fig.update_traces(textposition='inside', textinfo='percent+label')
-        
-        return {
-            'title': TranslationSystem.t('chart_payment_methods'),
-            'figure': fig
-        }
-    
-    def _create_profit_chart(self):
-        """إنشاء رسم تحليل الربحية"""
-        if 'profit' not in self.mapping:
-            return None
-        
-        profit_col = self.mapping['profit']
-        
-        if profit_col not in self.df.columns:
-            return None
-        
-        try:
-            profit_data = pd.to_numeric(self.df[profit_col], errors='coerce').dropna()
-            
-            if len(profit_data) == 0:
-                return None
-            
-            fig = px.histogram(
-                profit_data,
-                nbins=30,
-                title=TranslationSystem.t('chart_profit_dist'),
-                labels={'value': TranslationSystem.t('profit'), 'count': 'Count'}
-            )
-            
-            avg_profit = profit_data.mean()
-            fig.add_vline(
-                x=avg_profit,
-                line_dash="dash",
-                line_color="green",
-                annotation_text=f"Average: ${avg_profit:,.0f}",
-                annotation_position="top right"
-            )
-            
-            return {
-                'title': TranslationSystem.t('chart_profit_dist'),
-                'figure': fig
-            }
-        except:
-            return None
-
-# ==================== 4. وظائف المساعدة ====================
+# ==================== 3. وحدات مساعدة ====================
 
 def load_multiple_files(uploaded_files):
     """تحميل عدة ملفات Excel/CSV"""
@@ -2029,73 +945,59 @@ def merge_dataframes(dataframes):
         return None
 
 def load_css():
-    """تحميل CSS مع دعم متعدد اللغات والوضع الداكن"""
+    """تحميل CSS مع دعم متعدد اللغات والوضع الغامق"""
     direction = TranslationSystem.get_language_direction()
     font_family = TranslationSystem.get_font_family()
-    is_dark = st.session_state.get('theme', 'light') == 'dark'
-    
-    # ألوان الوضع الداكن
-    if is_dark:
-        background_color = "#0E1117"
-        text_color = "#FFFFFF"
-        card_background = "#262730"
-        border_color = "#3A3A4A"
-        header_background = "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)"
-    else:
-        background_color = "#FFFFFF"
-        text_color = "#000000"
-        card_background = "#FFFFFF"
-        border_color = "#e2e8f0"
-        header_background = "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)"
     
     css = f"""
     <style>
-    /* أساسيات */
+    /* إعدادات عامة */
     .stApp {{
-        background-color: {background_color};
-        color: {text_color};
         font-family: {font_family};
         text-align: {direction};
+        background-color: #0E1117;
+        color: #FAFAFA;
     }}
     
     /* العنوان الرئيسي */
     .main-header {{
-        background: {header_background};
+        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
         color: white;
         padding: 30px;
         border-radius: 15px;
         margin-bottom: 30px;
         text-align: center;
         font-family: {font_family};
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     }}
     
     /* بطاقات KPIs */
     .kpi-card {{
-        background: {card_background};
+        background: #1F2937;
         border-radius: 12px;
         padding: 20px;
         margin: 10px;
-        border: 1px solid {border_color};
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border: 1px solid #374151;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         text-align: center;
         transition: all 0.3s ease;
         font-family: {font_family};
         direction: {direction};
-        color: {text_color};
     }}
     
     .kpi-card:hover {{
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        border-color: #3B82F6;
     }}
     
-    /* منطقة رفع الملفات */
+    /* صندوق الرفع */
     .upload-box {{
-        border: 2px dashed #4F46E5;
+        border: 2px dashed #3B82F6;
         border-radius: 12px;
         padding: 40px;
         text-align: center;
-        background: {card_background};
+        background: #111827;
         margin: 20px 0;
         font-family: {font_family};
         direction: {direction};
@@ -2103,33 +1005,32 @@ def load_css():
     
     /* بطاقات الملفات */
     .file-card {{
-        background: {card_background};
+        background: #1F2937;
         border-radius: 10px;
         padding: 15px;
         margin: 10px 0;
-        border: 1px solid {border_color};
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid #374151;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         font-family: {font_family};
         direction: {direction};
     }}
     
     /* صندوق التحذيرات */
     .warning-box {{
-        background: {is_dark and '#2d230c' or '#fff3cd'};
-        border: 1px solid {is_dark and '#665412' or '#ffeaa7'};
-        color: {is_dark and '#ffd700' or '#856404'};
+        background: #FEF3C7;
+        border: 1px solid #F59E0B;
         border-radius: 8px;
         padding: 15px;
         margin: 10px 0;
         font-family: {font_family};
         direction: {direction};
+        color: #92400E;
     }}
     
-    /* صندوق التقرير - محدث للوضع الداكن */
+    /* صندوق التقرير */
     .report-box {{
-        background: {card_background};
-        color: {text_color};
-        border: 2px solid #4F46E5;
+        background: #1F2937;
+        border: 2px solid #3B82F6;
         border-radius: 15px;
         padding: 30px;
         margin: 20px 0;
@@ -2140,111 +1041,64 @@ def load_css():
         line-height: 1.8;
         max-height: 700px;
         overflow-y: auto;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        color: #D1D5DB;
     }}
     
     /* الأزرار */
     .stButton > button {{
         border-radius: 8px;
         font-family: {font_family};
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
     }}
     
-    /* عناصر التحكم */
+    .stButton > button:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }}
+    
+    /* تحديدات */
     .stSelectbox, .stTextInput, .stNumberInput {{
         font-family: {font_family};
-        color: {text_color};
-        background-color: {card_background};
+        background-color: #1F2937;
+        color: #FAFAFA;
+        border-color: #374151;
     }}
     
-    /* رؤوس التقارير */
-    .report-header {{
-        background: {is_dark and 'linear-gradient(135deg, #0c2461 0%, #1e3799 100%)' or 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)'};
-        color: white;
-        padding: 25px;
-        border-radius: 12px 12px 0 0;
-        margin-bottom: 20px;
-        text-align: center;
+    /* تعريفات */
+    .definition-text {{
+        font-size: 0.85rem;
+        color: #9CA3AF;
+        margin-top: 5px;
+        font-style: italic;
     }}
     
-    /* أقسام التقرير */
-    .report-section {{
-        background: {card_background};
-        border-left: 5px solid #4F46E5;
-        padding: 20px;
-        margin: 15px 0;
-        border-radius: 8px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        color: {text_color};
+    /* تخصيص Streamlit */
+    .css-1d391kg {{
+        background-color: #0E1117;
     }}
     
-    /* KPI في التقرير */
-    .report-kpi {{
-        background: {is_dark and '#1a3a5f' or '#f0f9ff'};
-        border: 1px solid {is_dark and '#2a4a7f' or '#bae6fd'};
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 8px;
-        color: {text_color};
+    /* تحسينات للوضع الغامق */
+    .css-1v3fvcr {{
+        color: #FAFAFA;
     }}
     
-    /* تحذيرات التقرير */
-    .report-warning {{
-        background: {is_dark and '#3a2a0c' or '#fff7ed'};
-        border: 1px solid {is_dark and '#5a4a2c' or '#fed7aa'};
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 8px;
-        color: {is_dark and '#ffd700' or '#92400e'};
+    /* ألوان النصوص */
+    h1, h2, h3, h4, h5, h6 {{
+        color: #F3F4F6 !important;
     }}
     
-    /* توصيات التقرير */
-    .report-recommendation {{
-        background: {is_dark and '#0c3a1c' or '#f0fdf4'};
-        border: 1px solid {is_dark and '#1c4a2c' or '#bbf7d0'};
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 8px;
-        color: {text_color};
+    /* تخصيص علامات التبويب */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 24px;
     }}
     
-    /* نصوص Streamlit الافتراضية */
-    .stMarkdown, .stText, .stDataFrame, .stMetric {{
-        color: {text_color} !important;
-    }}
-    
-    /* الجداول */
-    .dataframe {{
-        background-color: {card_background} !important;
-        color: {text_color} !important;
-    }}
-    
-    /* الرؤوس في الجداول */
-    .dataframe thead th {{
-        background-color: {is_dark and '#262730' or '#f8f9fa'} !important;
-        color: {text_color} !important;
-    }}
-    
-    /* الخلايا في الجداول */
-    .dataframe td {{
-        color: {text_color} !important;
-    }}
-    
-    /* التحديد في الجداول */
-    .dataframe tbody tr:hover {{
-        background-color: {is_dark and '#3A3A4A' or '#f1f5f9'} !important;
-    }}
-    
-    /* الأقسام القابلة للطي */
-    .streamlit-expanderHeader {{
-        background-color: {card_background} !important;
-        color: {text_color} !important;
-        border-color: {border_color} !important;
-    }}
-    
-    /* محتوى الأقسام القابلة للطي */
-    .streamlit-expanderContent {{
-        background-color: {card_background} !important;
-        color: {text_color} !important;
+    .stTabs [data-baseweb="tab"] {{
+        border-radius: 8px 8px 0px 0px;
+        padding: 10px 24px;
+        font-weight: 600;
     }}
     </style>
     
@@ -2252,9 +1106,9 @@ def load_css():
     """
     st.markdown(css, unsafe_allow_html=True)
 
-# ==================== 5. تهيئة حالة الجلسة ====================
+# ==================== 4. تهيئة حالة الجلسة ====================
 
-# إعدادات الصفحة
+# إعدادات الصفحة مع الوضع الغامق كافتراضي
 st.set_page_config(
     page_title=TranslationSystem.t('dashboard_title'),
     page_icon="📊",
@@ -2262,11 +1116,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# تهيئة حالة الجلسة
+# تهيئة حالة الجلسة مع الوضع الغامق كافتراضي
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'dark'
 if 'language' not in st.session_state:
     st.session_state.language = 'ar'
-if 'theme' not in st.session_state:
-    st.session_state.theme = 'light'
 if 'files_uploaded' not in st.session_state:
     st.session_state.files_uploaded = False
 if 'dataframes' not in st.session_state:
@@ -2285,20 +1139,13 @@ if 'use_merged' not in st.session_state:
     st.session_state.use_merged = False
 if 'text_report' not in st.session_state:
     st.session_state.text_report = ""
-
-# وظائف تبديل اللغة والمظهر
-def toggle_language():
-    st.session_state.language = 'en' if st.session_state.language == 'ar' else 'ar'
-    st.rerun()
-
-def toggle_theme():
-    st.session_state.theme = 'dark' if st.session_state.theme == 'light' else 'light'
-    st.rerun()
+if 'analysis_ready' not in st.session_state:
+    st.session_state.analysis_ready = False
 
 # تحميل CSS
 load_css()
 
-# ==================== 6. الشريط الجانبي ====================
+# ==================== 5. الشريط الجانبي ====================
 
 with st.sidebar:
     st.markdown(f"### {TranslationSystem.t('sidebar_settings')}")
@@ -2308,29 +1155,31 @@ with st.sidebar:
     with col1:
         st.markdown(f"**{TranslationSystem.t('language')}**")
     with col2:
-        current_lang = "العربية" if st.session_state.language == 'en' else "English"
-        if st.button(f"🌐 {current_lang}", use_container_width=True):
-            toggle_language()
+        current_lang = "English" if st.session_state.language == 'ar' else "العربية"
+        if st.button(f"🌐 {current_lang}", use_container_width=True, key="language_toggle"):
+            st.session_state.language = 'en' if st.session_state.language == 'ar' else 'ar'
+            st.rerun()
     
     # تبديل المظهر
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"**{TranslationSystem.t('theme')}**")
     with col2:
-        current_theme = TranslationSystem.t('dark_theme') if st.session_state.theme == 'light' else TranslationSystem.t('light_theme')
-        if st.button(current_theme, use_container_width=True):
-            toggle_theme()
+        current_theme = TranslationSystem.t('light_theme') if st.session_state.theme == 'dark' else TranslationSystem.t('dark_theme')
+        if st.button(current_theme, use_container_width=True, key="theme_toggle"):
+            st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
+            st.rerun()
     
     st.divider()
     
     # تحميل الإعدادات السابقة
-    if st.button(TranslationSystem.t('load_settings'), use_container_width=True, icon="📥"):
+    if st.button(TranslationSystem.t('load_settings'), use_container_width=True, icon="📥", key="load_settings"):
         if os.path.exists('sales_config.json'):
             with open('sales_config.json', 'r', encoding='utf-8') as f:
                 config = json.load(f)
                 st.session_state.column_mapping = config.get('column_mapping', {})
                 st.session_state.language = config.get('language', 'ar')
-                st.session_state.theme = config.get('theme', 'light')
+                st.session_state.theme = config.get('theme', 'dark')
                 st.success(TranslationSystem.t('settings_loaded'))
                 st.rerun()
         else:
@@ -2338,7 +1187,7 @@ with st.sidebar:
     
     # حفظ الإعدادات
     if st.session_state.column_mapping:
-        if st.button(TranslationSystem.t('save_settings'), use_container_width=True, icon="💾"):
+        if st.button(TranslationSystem.t('save_settings'), use_container_width=True, icon="💾", key="save_settings"):
             config = {
                 'column_mapping': st.session_state.column_mapping,
                 'saved_at': datetime.now().isoformat(),
@@ -2350,22 +1199,23 @@ with st.sidebar:
             st.success(TranslationSystem.t('settings_saved'))
     
     # إعادة التعيين
-    if st.button(TranslationSystem.t('reset'), use_container_width=True, icon="🔄"):
+    if st.button(TranslationSystem.t('reset'), use_container_width=True, icon="🔄", key="reset"):
         for key in list(st.session_state.keys()):
             if key not in ['language', 'theme']:
                 del st.session_state[key]
         st.rerun()
 
-# ==================== 7. العنوان الرئيسي ====================
+# ==================== 6. العنوان الرئيسي ====================
 
 st.markdown(f"""
 <div class="main-header">
     <h1>{TranslationSystem.t('dashboard_title')}</h1>
     <p>{TranslationSystem.t('dashboard_subtitle')}</p>
+    <p style="font-size: 0.9rem; opacity: 0.9;">{TranslationSystem.t('audience_target')}</p>
 </div>
 """, unsafe_allow_html=True)
 
-# ==================== 8. تحميل الملفات المتعددة ====================
+# ==================== 7. تحميل الملفات ====================
 
 st.markdown(f"## 📤 {TranslationSystem.t('step_1')}")
 
@@ -2405,13 +1255,13 @@ if uploaded_files and len(uploaded_files) > 0:
                     if st.checkbox(f"{TranslationSystem.t('preview')} {i+1}", key=f"preview_{i}"):
                         st.dataframe(file_info['dataframe'].head(), use_container_width=True)
             
-            # خيارات دمج الملفات
+            # دمج الملفات
             if len(dataframes) > 1:
                 st.markdown("### 🔗 خيارات الدمج")
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    if st.button(TranslationSystem.t('merge_files'), use_container_width=True, icon="🔗"):
+                    if st.button(TranslationSystem.t('merge_files'), use_container_width=True, icon="🔗", key="merge_button"):
                         merged_df = merge_dataframes(dataframes)
                         if merged_df is not None:
                             st.session_state.merged_df = merged_df
@@ -2420,7 +1270,7 @@ if uploaded_files and len(uploaded_files) > 0:
                             st.success(TranslationSystem.t('merged_success'))
                 
                 with col2:
-                    if st.button(TranslationSystem.t('use_single'), use_container_width=True, icon="📄"):
+                    if st.button(TranslationSystem.t('use_single'), use_container_width=True, icon="📄", key="single_button"):
                         st.session_state.use_merged = False
                         st.session_state.current_df = dataframes[0]
                         st.info(f"📄 {TranslationSystem.t('individual_file')}")
@@ -2434,7 +1284,7 @@ if uploaded_files and len(uploaded_files) > 0:
                     st.session_state.current_df = dataframes[0]
                     st.session_state.use_merged = False
             
-            # عرض إحصائيات البيانات
+            # عرض إحصائيات
             df_to_use = st.session_state.current_df
             
             if st.session_state.use_merged and st.session_state.merged_df is not None:
@@ -2445,24 +1295,11 @@ if uploaded_files and len(uploaded_files) > 0:
             # عرض عينة من البيانات
             with st.expander(f"{TranslationSystem.t('preview')} ({TranslationSystem.t('preview_rows')})"):
                 st.dataframe(df_to_use.head(), use_container_width=True)
-            
-            # عرض معلومات البيانات
-            st.markdown(f"### 📈 {TranslationSystem.t('statistics')}")
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric(TranslationSystem.t('total_files'), len(dataframes))
-            with col2:
-                st.metric(TranslationSystem.t('total_records'), len(df_to_use))
-            with col3:
-                st.metric(TranslationSystem.t('total_columns'), len(df_to_use.columns))
-            with col4:
-                numeric_cols = df_to_use.select_dtypes(include=[np.number]).columns.tolist()
-                st.metric(TranslationSystem.t('numeric_columns'), len(numeric_cols))
         
     except Exception as e:
         st.error(f"{TranslationSystem.t('upload_error')} {str(e)}")
 
-# ==================== 9. تعيين أعمدة المبيعات ====================
+# ==================== 8. تعيين الأعمدة ====================
 
 if st.session_state.files_uploaded and st.session_state.current_df is not None:
     st.markdown(f"## 🎯 {TranslationSystem.t('step_2')}")
@@ -2470,9 +1307,22 @@ if st.session_state.files_uploaded and st.session_state.current_df is not None:
     df = st.session_state.current_df
     columns = df.columns.tolist()
     
-    # التعرف التلقائي على الأعمدة
-    mapper = SalesAutoColumnMapper(df)
-    auto_suggestions = mapper.auto_detect_columns()
+    # استخدام AutoColumnMapper من الملف الآخر
+    try:
+        from sales_auto_column_mapper import SalesAutoColumnMapper
+        mapper = SalesAutoColumnMapper(df)
+        auto_suggestions = mapper.auto_detect_columns()
+    except:
+        # إذا فشل الاستيراد، ننشئ فئة مبسطة
+        class SimpleMapper:
+            def __init__(self, df):
+                self.df = df
+            
+            def auto_detect_columns(self):
+                return {}
+        
+        mapper = SimpleMapper(df)
+        auto_suggestions = {}
     
     st.markdown(f"**{TranslationSystem.t('auto_detection')}**")
     st.info(TranslationSystem.t('auto_detection_desc'))
@@ -2485,7 +1335,7 @@ if st.session_state.files_uploaded and st.session_state.current_df is not None:
         TranslationSystem.t('category_order'): ["order_id", "order_date", "status"],
         TranslationSystem.t('category_customer'): ["customer_name", "customer_id"],
         TranslationSystem.t('category_product'): ["product_name", "product_id", "category"],
-        TranslationSystem.t('category_financial'): ["quantity", "price", "total_amount", "discount", "profit", "cost"],
+        TranslationSystem.t('category_financial'): ["quantity", "total_amount", "discount", "cost"],
         TranslationSystem.t('category_location'): ["region", "city", "country"],
         TranslationSystem.t('category_sales'): ["salesperson", "payment_method"]
     }
@@ -2517,11 +1367,13 @@ if st.session_state.files_uploaded and st.session_state.current_df is not None:
     st.session_state.column_mapping = column_mapping
     
     # زر للمتابعة للتحليل
-    if st.button(TranslationSystem.t('analyze_button'), type="primary", use_container_width=True, icon="🚀"):
-        st.session_state.analysis_ready = True
-        st.rerun()
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button(TranslationSystem.t('analyze_button'), type="primary", use_container_width=True, icon="🚀", key="analyze_button"):
+            st.session_state.analysis_ready = True
+            st.rerun()
 
-# ==================== 10. التحليل الذكي للمبيعات ====================
+# ==================== 9. التحليل الذكي ====================
 
 if st.session_state.get('analysis_ready', False):
     st.markdown(f"## 📊 {TranslationSystem.t('step_3')}")
@@ -2540,13 +1392,13 @@ if st.session_state.get('analysis_ready', False):
     # عرض النتائج الرئيسية
     st.markdown(f"### 📈 {TranslationSystem.t('kpis_title')}")
     
-    # بطاقات KPIs
+    # بطاقات KPIs مع تعريفات
     kpis = analysis.get('kpis', {})
     if kpis:
         kpi_keys = list(kpis.keys())
         
         # عرض KPIs في أعمدة
-        cols_per_row = 4
+        cols_per_row = 3
         for i in range(0, len(kpi_keys), cols_per_row):
             cols = st.columns(cols_per_row)
             for j in range(cols_per_row):
@@ -2565,119 +1417,58 @@ if st.session_state.get('analysis_ready', False):
                             <div style="font-size: 2.5rem; margin-bottom: 10px; color: {trend_color};">
                                 {kpi_info.get('icon', '📊')}
                             </div>
-                            <div style="font-size: 1.8rem; font-weight: bold; color: #4F46E5;">
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #60A5FA;">
                                 {kpi_info['formatted']}
                             </div>
-                            <div style="color: #6B7280; font-size: 0.9rem;">
+                            <div style="color: #D1D5DB; font-size: 1rem; font-weight: 600;">
                                 {kpi_info['label']}
+                            </div>
+                            <div class="definition-text">
+                                {kpi_info.get('definition', '')}
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
     
-    # الرسوم البيانية الذكية
-    st.markdown(f"### 📊 {TranslationSystem.t('charts_title')}")
+    # جودة البيانات
+    if analysis.get('warnings'):
+        st.markdown(f"### 🔍 {TranslationSystem.t('data_quality_title')}")
+        for warning in analysis['warnings']:
+            st.warning(warning)
     
-    visualizer = SalesVisualizer(
-        st.session_state.current_df,
-        st.session_state.column_mapping,
-        analysis
-    )
-    
-    # عرض الرسوم حسب توفر البيانات
-    charts = visualizer.generate_all_charts()
-    
-    if charts:
-        for i in range(0, len(charts), 2):
-            cols = st.columns(2)
-            for j in range(2):
-                if i + j < len(charts):
-                    chart_info = charts[i + j]
-                    with cols[j]:
-                        st.markdown(f"#### {chart_info['title']}")
-                        st.plotly_chart(chart_info['figure'], use_container_width=True)
-    else:
-        st.warning(TranslationSystem.t('no_charts_data'))
+    # النقاط الرئيسية
+    if analysis.get('insights'):
+        st.markdown(f"### 🎯 {TranslationSystem.t('key_findings')}")
+        for insight in analysis['insights']:
+            st.info(insight)
     
     # التقرير النصي الاحترافي
     st.markdown(f"### 📄 {TranslationSystem.t('report_title')}")
     
-    # زر إنشاء التقرير الاحترافي
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        if st.button(TranslationSystem.t('generate_report'), use_container_width=True, icon="📋", type="primary"):
-            st.session_state.text_report = analyzer.generate_professional_report(analysis)
+    # زر إنشاء التقرير
+    if st.button(TranslationSystem.t('generate_report'), use_container_width=True, icon="📋", type="primary", key="generate_report"):
+        st.session_state.text_report = analyzer.generate_professional_report(analysis)
     
     # عرض التقرير إذا كان موجوداً
     if st.session_state.text_report:
         st.markdown(f"#### {TranslationSystem.t('executive_summary')}")
         
-        # صندوق عرض التقرير الاحترافي
+        # صندوق عرض التقرير
         st.markdown(f'<div class="report-box">{st.session_state.text_report}</div>', unsafe_allow_html=True)
         
-        # زر النسخ فقط
-        if st.button(TranslationSystem.t('copy_report'), use_container_width=True, icon="📋"):
+        # زر النسخ
+        if st.button(TranslationSystem.t('copy_report'), use_container_width=True, icon="📋", key="copy_report"):
             try:
                 import pyperclip
                 pyperclip.copy(st.session_state.text_report)
                 st.success(TranslationSystem.t('report_copied'))
             except:
-                # Fallback في حالة عدم وجود pyperclip
                 st.code(st.session_state.text_report, language='text')
-                st.warning("⚠️ يرجى نسخ النص أعلاه يدوياً" if st.session_state.language == 'ar' else "⚠️ Please copy the text above manually")
-    
-    # تحليل إضافي
-    with st.expander(TranslationSystem.t('advanced_analysis')):
-        st.markdown(f"### 🔍 {TranslationSystem.t('advanced_analysis')}")
-        
-        # تحليل العلاقات
-        numeric_cols = []
-        for col in st.session_state.current_df.columns:
-            if pd.api.types.is_numeric_dtype(st.session_state.current_df[col]):
-                numeric_cols.append(col)
-        
-        if len(numeric_cols) >= 2:
-            st.markdown(f"#### {TranslationSystem.t('correlation_matrix')}")
-            
-            numeric_df = st.session_state.current_df[numeric_cols]
-            corr_matrix = numeric_df.corr()
-            
-            fig = px.imshow(
-                corr_matrix,
-                text_auto='.2f',
-                color_continuous_scale='RdBu',
-                aspect="auto",
-                title=TranslationSystem.t('correlation_matrix')
-            )
-            st.plotly_chart(fig, use_container_width=True)
-        
-        # اكتشاف القيم الشاذة
-        st.markdown(f"#### {TranslationSystem.t('outlier_detection')}")
-        if 'total_amount' in st.session_state.column_mapping:
-            price_col = st.session_state.column_mapping['total_amount']
-            if price_col in st.session_state.current_df.columns:
-                try:
-                    price_data = st.session_state.current_df[price_col].dropna()
-                    
-                    if len(price_data) > 0:
-                        mean_price = price_data.mean()
-                        std_price = price_data.std()
-                        
-                        if std_price > 0:
-                            z_scores = np.abs((price_data - mean_price) / std_price)
-                            outliers_mask = z_scores > 3
-                            outliers = st.session_state.current_df.loc[price_data.index[outliers_mask]]
-                            
-                            if len(outliers) > 0:
-                                st.warning(TranslationSystem.t('outliers_found', count=len(outliers)))
-                                st.dataframe(outliers.head(), use_container_width=True)
-                            else:
-                                st.success(TranslationSystem.t('no_outliers'))
-                        else:
-                            st.info(TranslationSystem.t('zero_std'))
-                except Exception as e:
-                    st.error(f"{TranslationSystem.t('error')}: {str(e)}")
+                if st.session_state.language == 'ar':
+                    st.warning("⚠️ يرجى نسخ النص أعلاه يدوياً")
+                else:
+                    st.warning("⚠️ Please copy the text above manually")
 
-# ==================== 11. رسالة الترحيب ====================
+# ==================== 10. رسالة الترحيب ====================
 
 if not st.session_state.files_uploaded:
     st.info("""
@@ -2688,19 +1479,21 @@ if not st.session_state.files_uploaded:
     3. **التحليل**: انتقل إلى التحليل للحصول على نتائج ورسوم بيانية
     4. **التقرير**: إنشاء تقرير نصي احترافي يمكن نسخه للعميل
     
-    💡 **نصائح**:
-    - يمكنك رفع ملفات متعددة ودمجها
-    - تأكد من تعيين عمود **التكلفة** لحساب هامش الربح الإجمالي
-    - استخدم زر حفظ الإعدادات لحفظ التكوين
+    💡 **مميزات المنتج**:
+    - تحليل احترافي مصمم للشركات الصغيرة والمتوسطة
+    - واجهة غامقة مع نصوص واضحة
+    - تقارير مكتوبة باللغة العربية أو الإنجليزية بالكامل
+    - نتائج قابلة للتنفيذ فوراً
     """)
 
-# ==================== 12. تذييل الصفحة ====================
+# ==================== 11. تذييل الصفحة ====================
 
 st.markdown("---")
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown("""
     <div style="text-align: center; color: #6B7280; font-size: 0.9rem;">
-    <p>📊 نظام تحليل المبيعات الذكي | الإصدار 3.0 | يدعم العربية والإنجليزية | مع هامش الربح الإجمالي</p>
+    <p>📊 نظام تحليل المبيعات الذكي | الإصدار 3.0 | يدعم العربية والإنجليزية</p>
+    <p>تم تطوير المنتج للشركات الصغيرة والمتوسطة لتحليل بيانات المبيعات بسرعة ووضوح</p>
     </div>
     """, unsafe_allow_html=True)
